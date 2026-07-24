@@ -8,7 +8,6 @@ Website sederhana untuk upload dan menampilkan foto-foto. Data disimpan di Local
 - ✅ Simpan ke galeri
 - ✅ Hapus foto dari galeri
 - ✅ Responsive design
-- ✅ Keyboard shortcut (Enter untuk simpan, Escape untuk batal)
 
 ## Teknologi
 - HTML
@@ -17,12 +16,10 @@ Website sederhana untuk upload dan menampilkan foto-foto. Data disimpan di Local
 - LocalStorage
 
 ## Demo
-[https://username.github.io/gitpo/](https://username.github.io/gitpo/)
+[https://perbasijambi.github.io/gitpo/](https://perbasijambi.github.io/gitpo/)
 
 ## Cara Menggunakan
 1. Klik atau drag & drop foto ke kotak upload
 2. Preview akan muncul
 3. Klik "Simpan ke Galeri" atau tekan Enter
 4. Foto akan muncul di galeri
-5. Hover foto untuk melihat detail & tombol hapus
-
