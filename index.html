@@ -5,796 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📁 gitpo - File Manager</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg-body: #f0f2f5;
-            --bg-sidebar: #1a202c;
-            --bg-card: #ffffff;
-            --text-dark: #1a202c;
-            --text-gray: #4a5568;
-            --text-light: #a0aec0;
-            --border-color: #e2e8f0;
-            --primary: #667eea;
-            --success: #48bb78;
-            --danger: #fc8181;
-            --warning: #ecc94b;
-            --radius: 8px;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        body.dark-mode {
-            --bg-body: #1a202c;
-            --bg-card: #2d3748;
-            --text-dark: #e2e8f0;
-            --text-gray: #a0aec0;
-            --text-light: #718096;
-            --border-color: #4a5568;
-        }
-        body {
-            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-body);
-            color: var(--text-dark);
-            transition: all 0.2s;
-            min-height: 100vh;
-        }
-        .app { display: flex; min-height: 100vh; }
-        .sidebar {
-            width: 220px;
-            background: var(--bg-sidebar);
-            color: white;
-            padding: 20px 16px;
-            flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        .sidebar .logo { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .sidebar .logo span { background: var(--primary); padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; }
-        .sidebar .menu-label { font-size: 0.65rem; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 1px; margin: 15px 0 8px 0; }
-        .sidebar .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all 0.2s;
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            font-size: 0.85rem;
-        }
-        .sidebar .menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
-        .sidebar .menu-item.active { background: var(--primary); color: white; }
-        .sidebar .menu-item .badge { margin-left: auto; background: var(--danger); color: white; font-size: 0.6rem; padding: 1px 8px; border-radius: 50px; }
-        .main { flex: 1; padding: 20px 30px; min-width: 0; }
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .main-header h1 { font-size: 1.5rem; font-weight: 700; }
-        .btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { opacity: 0.8; transform: translateY(-1px); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { opacity: 0.8; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { opacity: 0.8; }
-        .btn-sm { padding: 4px 12px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
-        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-gray); }
-        .btn-outline:hover { background: var(--bg-body); }
-        .toolbar {
-            background: var(--bg-card);
-            padding: 10px 16px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-        }
-        .toolbar .info { font-size: 0.8rem; color: var(--text-gray); }
-        .toolbar .info span { font-weight: 700; color: var(--primary); }
-        .toolbar .search input {
-            padding: 5px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background: var(--bg-body);
-            color: var(--text-dark);
-            font-size: 0.8rem;
-            width: 180px;
-        }
-        .toolbar .search input:focus { outline: none; border-color: var(--primary); }
-        .upload-box {
-            background: var(--bg-card);
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius);
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .upload-box:hover { border-color: var(--primary); background: var(--bg-body); }
-        .upload-box input[type="file"] { display: none; }
-        .upload-box .hint { font-size: 0.75rem; color: var(--text-light); margin-top: 3px; }
-        .upload-box.dragover { border-color: var(--success); background: rgba(72,187,120,0.1); }
-        .folder-tree {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            min-height: 200px;
-        }
-        .folder-item { border-bottom: 1px solid var(--border-color); }
-        .folder-item:last-child { border-bottom: none; }
-        .folder-header {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            gap: 8px;
-            user-select: none;
-        }
-        .folder-header:hover { background: var(--bg-body); }
-        .folder-header .arrow { transition: transform 0.2s; font-size: 0.7rem; color: var(--text-light); width: 16px; text-align: center; }
-        .folder-header .arrow.open { transform: rotate(90deg); }
-        .folder-header .folder-icon { font-size: 1.2rem; }
-        .folder-header .folder-name { font-weight: 600; font-size: 0.95rem; flex: 1; }
-        .folder-header .folder-actions { display: flex; gap: 4px; }
-        .folder-header .folder-count { font-size: 0.7rem; color: var(--text-light); margin-right: 8px; }
-        .folder-content { display: none; padding: 0 16px 10px 36px; background: var(--bg-body); }
-        .folder-content.open { display: block; }
-        .file-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 12px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .file-item:hover { background: var(--bg-card); }
-        .file-item .file-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-        .file-item .file-left .icon { font-size: 1rem; }
-        .file-item .file-left .name { font-size: 0.85rem; word-break: break-all; }
-        .file-item .file-left .ext { font-size: 0.6rem; background: var(--border-color); padding: 1px 6px; border-radius: 4px; color: var(--text-light); }
-        .file-item .file-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-        .file-item .file-right .size { font-size: 0.7rem; color: var(--text-light); }
-        .file-item .file-right .btn-sm { padding: 2px 8px; font-size: 0.6rem; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
-        .btn-sm.download { background: var(--primary); color: white; }
-        .btn-sm.download:hover { opacity: 0.8; }
-        .btn-sm.delete { background: var(--danger); color: white; }
-        .btn-sm.delete:hover { opacity: 0.8; }
-        .btn-sm.view { background: var(--success); color: white; }
-        .btn-sm.view:hover { opacity: 0.8; }
-        .btn-sm.rename { background: var(--warning); color: #333; }
-        .btn-sm.rename:hover { opacity: 0.8; }
-        .empty-state { text-align: center; padding: 30px; color: var(--text-light); }
-        .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
-        .lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .lightbox.active { display: flex; }
-        .lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; }
-        .lightbox .close-lightbox {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2.5rem;
-            cursor: pointer;
-            background: none;
-            border: none;
-            transition: all 0.3s;
-        }
-        .lightbox .close-lightbox:hover { transform: scale(1.2); color: var(--danger); }
-        .lightbox .lightbox-info {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.7);
-            font-size: 0.8rem;
-            background: rgba(0,0,0,0.5);
-            padding: 6px 16px;
-            border-radius: 50px;
-        }
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--bg-card);
-            color: var(--text-dark);
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            z-index: 10000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.4s ease;
-            max-width: 400px;
-        }
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { border-left: 4px solid var(--success); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9998;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-box {
-            background: var(--bg-card);
-            padding: 24px;
-            border-radius: var(--radius);
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .modal-box h3 { margin-bottom: 10px; }
-        .modal-box input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background: var(--bg-body);
-            color: var(--text-dark);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-        .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-        @media (max-width: 768px) {
-            .app { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: relative; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 4px; }
-            .sidebar .logo { margin-bottom: 0; width: 100%; }
-            .sidebar .menu-label { display: none; }
-            .sidebar .menu-item { padding: 5px 10px; font-size: 0.75rem; }
-            .main { padding: 15px; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar .search input { width: 100%; }
-            .folder-content { padding-left: 16px; }
-            .file-item { flex-direction: column; align-items: stretch; gap: 4px; }
-            .file-item .file-right { justify-content: flex-start; }
-        }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: var(--bg-body); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-body:#f0f2f5;--bg-sidebar:#1a202c;--bg-card:#fff;--text-dark:#1a202c;--text-gray:#4a5568;--text-light:#a0aec0;--border-color:#e2e8f0;--primary:#667eea;--success:#48bb78;--danger:#fc8181;--radius:8px}
+        body.dark-mode{--bg-body:#1a202c;--bg-card:#2d3748;--text-dark:#e2e8f0;--text-gray:#a0aec0;--text-light:#718096;--border-color:#4a5568}
+        body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg-body);color:var(--text-dark);transition:.2s;min-height:100vh}
+        .app{display:flex;min-height:100vh}
+        .sidebar{width:220px;background:var(--bg-sidebar);color:#fff;padding:20px 16px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+        .sidebar .logo{font-size:1.2rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+        .sidebar .logo span{background:var(--primary);padding:2px 8px;border-radius:4px;font-size:.6rem}
+        .sidebar .menu-label{font-size:.65rem;text-transform:uppercase;color:rgba(255,255,255,0.4);letter-spacing:1px;margin:15px 0 8px}
+        .sidebar .menu-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius);cursor:pointer;transition:.2s;color:rgba(255,255,255,0.7);text-decoration:none;font-size:.85rem}
+        .sidebar .menu-item:hover{background:rgba(255,255,255,0.1);color:#fff}
+        .sidebar .menu-item.active{background:var(--primary);color:#fff}
+        .sidebar .menu-item .badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.6rem;padding:1px 8px;border-radius:50px}
+        .main{flex:1;padding:20px 30px;min-width:0}
+        .main-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:20px}
+        .main-header h1{font-size:1.5rem;font-weight:700}
+        .btn{padding:8px 18px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.2s;font-size:.85rem;display:inline-flex;align-items:center;gap:6px}
+        .btn-primary{background:var(--primary);color:#fff}
+        .btn-primary:hover{opacity:.8;transform:translateY(-1px)}
+        .btn-success{background:var(--success);color:#fff}
+        .btn-success:hover{opacity:.8}
+        .btn-danger{background:var(--danger);color:#fff}
+        .btn-danger:hover{opacity:.8}
+        .btn-sm{padding:4px 12px;font-size:.7rem;border:none;border-radius:4px;cursor:pointer;font-weight:600}
+        .btn-outline{background:0 0;border:1px solid var(--border-color);color:var(--text-gray)}
+        .btn-outline:hover{background:var(--bg-body)}
+        .toolbar{background:var(--bg-card);padding:10px 16px;border-radius:var(--radius);box-shadow:0 2px 10px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;border:1px solid var(--border-color)}
+        .toolbar .info{font-size:.8rem;color:var(--text-gray)}
+        .toolbar .info span{font-weight:700;color:var(--primary)}
+        .toolbar .search input{padding:5px 12px;border:1px solid var(--border-color);border-radius:var(--radius);background:var(--bg-body);color:var(--text-dark);font-size:.8rem;width:180px}
+        .toolbar .search input:focus{outline:0;border-color:var(--primary)}
+        .upload-box{background:var(--bg-card);border:2px dashed var(--border-color);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:20px;transition:.3s;cursor:pointer}
+        .upload-box:hover{border-color:var(--primary);background:var(--bg-body)}
+        .upload-box input[type=file]{display:none}
+        .upload-box .hint{font-size:.75rem;color:var(--text-light);margin-top:3px}
+        .upload-box.dragover{border-color:var(--success);background:rgba(72,187,120,0.1)}
+        .folder-tree{background:var(--bg-card);border-radius:var(--radius);box-shadow:0 2px 10px rgba(0,0,0,0.05);border:1px solid var(--border-color);overflow:hidden;min-height:200px}
+        .folder-item{border-bottom:1px solid var(--border-color)}
+        .folder-item:last-child{border-bottom:0}
+        .folder-header{display:flex;align-items:center;padding:10px 16px;cursor:pointer;transition:.2s;gap:8px;user-select:none}
+        .folder-header:hover{background:var(--bg-body)}
+        .folder-header .arrow{transition:transform .2s;font-size:.7rem;color:var(--text-light);width:16px;text-align:center}
+        .folder-header .arrow.open{transform:rotate(90deg)}
+        .folder-header .folder-icon{font-size:1.2rem}
+        .folder-header .folder-name{font-weight:600;font-size:.95rem;flex:1}
+        .folder-header .folder-actions{display:flex;gap:4px}
+        .folder-header .folder-count{font-size:.7rem;color:var(--text-light);margin-right:8px}
+        .folder-content{display:none;padding:0 16px 10px 36px;background:var(--bg-body)}
+        .folder-content.open{display:block}
+        .file-item{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-radius:4px;transition:.2s;gap:10px;flex-wrap:wrap}
+        .file-item:hover{background:var(--bg-card)}
+        .file-item .file-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+        .file-item .file-left .icon{font-size:1rem}
+        .file-item .file-left .name{font-size:.85rem;word-break:break-all}
+        .file-item .file-left .ext{font-size:.6rem;background:var(--border-color);padding:1px 6px;border-radius:4px;color:var(--text-light)}
+        .file-item .file-right{display:flex;align-items:center;gap:4px;flex-shrink:0}
+        .file-item .file-right .size{font-size:.7rem;color:var(--text-light)}
+        .file-item .file-right .btn-sm{padding:2px 8px;font-size:.6rem;border-radius:4px;border:none;cursor:pointer;font-weight:600}
+        .btn-sm.download{background:var(--primary);color:#fff}
+        .btn-sm.download:hover{opacity:.8}
+        .btn-sm.delete{background:var(--danger);color:#fff}
+        .btn-sm.delete:hover{opacity:.8}
+        .btn-sm.view{background:var(--success);color:#fff}
+        .btn-sm.view:hover{opacity:.8}
+        .btn-sm.rename{background:#ecc94b;color:#333}
+        .btn-sm.rename:hover{opacity:.8}
+        .empty-state{text-align:center;padding:30px;color:var(--text-light)}
+        .empty-state .icon{font-size:2.5rem;margin-bottom:8px}
+        .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center;padding:20px}
+        .lightbox.active{display:flex}
+        .lightbox img{max-width:90%;max-height:90%;object-fit:contain;border-radius:8px}
+        .lightbox .close-lightbox{position:absolute;top:20px;right:30px;color:#fff;font-size:2.5rem;cursor:pointer;background:0 0;border:none;transition:.3s}
+        .lightbox .close-lightbox:hover{transform:scale(1.2);color:var(--danger)}
+        .lightbox .lightbox-info{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:.8rem;background:rgba(0,0,0,0.5);padding:6px 16px;border-radius:50px}
+        .toast{position:fixed;bottom:30px;right:30px;background:var(--bg-card);color:var(--text-dark);padding:12px 24px;border-radius:var(--radius);box-shadow:0 4px 20px rgba(0,0,0,0.15);border:1px solid var(--border-color);font-size:.9rem;z-index:10000;transform:translateY(100px);opacity:0;transition:.4s;max-width:400px}
+        .toast.show{transform:translateY(0);opacity:1}
+        .toast.success{border-left:4px solid var(--success)}
+        .toast.error{border-left:4px solid var(--danger)}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;align-items:center;justify-content:center}
+        .modal-overlay.active{display:flex}
+        .modal-box{background:var(--bg-card);padding:24px;border-radius:var(--radius);max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+        .modal-box h3{margin-bottom:10px}
+        .modal-box input{width:100%;padding:8px 12px;border:1px solid var(--border-color);border-radius:var(--radius);background:var(--bg-body);color:var(--text-dark);font-size:.95rem;margin-bottom:15px}
+        .modal-box .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+        @media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative;padding:12px 16px;display:flex;flex-wrap:wrap;gap:4px}.sidebar .logo{margin-bottom:0;width:100%}.sidebar .menu-label{display:none}.sidebar .menu-item{padding:5px 10px;font-size:.75rem}.main{padding:15px}.toolbar{flex-direction:column;align-items:stretch}.toolbar .search input{width:100%}.folder-content{padding-left:16px}.file-item{flex-direction:column;align-items:stretch;gap:4px}.file-item .file-right{justify-content:flex-start}}
+        ::-webkit-scrollbar{width:5px}
+        ::-webkit-scrollbar-track{background:var(--bg-body)}
+        ::-webkit-scrollbar-thumb{background:var(--primary);border-radius:10px}
     </style>
 </head>
 <body>
-    <div class="app">
-        <aside class="sidebar">
-            <div class="logo">📁 gitpo <span>v7.1</span></div>
-            <div class="menu-label">Menu</div>
-            <a class="menu-item active" onclick="switchView('all')">
-                <span>📂</span> Semua Folder
-                <span class="badge" id="totalBadge">0</span>
-            </a>
-            <a class="menu-item" onclick="switchView('images')">
-                <span>🖼️</span> Foto
-            </a>
-            <a class="menu-item" onclick="switchView('docs')">
-                <span>📄</span> Dokumen
-            </a>
-            <a class="menu-item" onclick="toggleTheme()">
-                <span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span>
-            </a>
-        </aside>
-
-        <main class="main">
-            <div class="main-header">
-                <h1 id="pageTitle">📂 Semua Folder</h1>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="showNewFolderModal()">📁 Buat Folder</button>
-                    <button class="btn btn-success" onclick="triggerUpload()">📤 Upload</button>
-                    <button class="btn btn-outline" onclick="clearAll()">🗑️ Kosongkan</button>
-                </div>
-                <input type="file" id="fileInput" multiple style="display:none">
-            </div>
-
-            <div class="toolbar">
-                <div class="info">
-                    📁 <span id="folderCount">0</span> folder •
-                    📄 <span id="fileCount">0</span> file •
-                    💾 <span id="totalSize">0 KB</span>
-                </div>
-                <div class="search">
-                    <input type="text" id="searchInput" placeholder="🔍 Cari..." oninput="filterItems()">
-                </div>
-            </div>
-
-            <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
-                <p>📤 Klik untuk upload atau drag & drop file ke sini</p>
-                <div class="hint">Support semua jenis file | Maks 10MB</div>
-            </div>
-
-            <div class="folder-tree" id="folderTree"></div>
-        </main>
-    </div>
-
-    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <button class="close-lightbox" onclick="closeLightbox()">✕</button>
-        <img id="lightboxImage" src="" alt="Preview">
-        <div class="lightbox-info" id="lightboxInfo"></div>
-    </div>
-
-    <div class="modal-overlay" id="newFolderModal" onclick="closeNewFolderModal()">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <h3>📁 Buat Folder Baru</h3>
-            <input type="text" id="newFolderName" placeholder="Nama folder..." onkeydown="if(event.key==='Enter') createFolder()">
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="closeNewFolderModal()">Batal</button>
-                <button class="btn btn-primary" onclick="createFolder()">Buat</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast"></div>
-
-    <script>
-        var data = JSON.parse(localStorage.getItem('gitpo_folders_v7')) || {
-            folders: [{ id: 'root', name: 'Root', parent: null, files: [] }]
-        };
-        var currentView = 'all';
-        var searchQuery = '';
-        var expandedFolders = JSON.parse(localStorage.getItem('gitpo_expanded_v7')) || ['root'];
-
-        function generateId() {
-            return Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-        }
-
-        function findFolder(id) {
-            return data.folders.find(function(f) { return f.id === id; });
-        }
-
-        function getChildFolders(parentId) {
-            return data.folders.filter(function(f) { return f.parent === parentId; });
-        }
-
-        function getFolderFiles(folderId) {
-            var folder = findFolder(folderId);
-            return folder ? folder.files || [] : [];
-        }
-
-        function getTotalFiles() {
-            var total = 0;
-            for (var i = 0; i < data.folders.length; i++) {
-                total += data.folders[i].files ? data.folders[i].files.length : 0;
-            }
-            return total;
-        }
-
-        function getTotalSize() {
-            var total = 0;
-            for (var i = 0; i < data.folders.length; i++) {
-                var files = data.folders[i].files || [];
-                for (var j = 0; j < files.length; j++) {
-                    total += files[j].size || 0;
-                }
-            }
-            return total;
-        }
-
-        function formatSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / 1048576).toFixed(1) + ' MB';
-        }
-
-        function getFileIcon(name) {
-            var ext = name.split('.').pop().toLowerCase();
-            var map = {
-                jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', webp: '🖼️', svg: '🖼️',
-                pdf: '📄', doc: '📝', docx: '📝', txt: '📃', rtf: '📃',
-                xls: '📊', xlsx: '📊', csv: '📊',
-                ppt: '📽️', pptx: '📽️',
-                zip: '📦', rar: '📦', 7z: '📦', tar: '📦', gz: '📦',
-                mp3: '🎵', wav: '🎵', mp4: '🎬', avi: '🎬', mkv: '🎬',
-                html: '🌐', css: '🎨', js: '⚡', php: '🐘', py: '🐍', json: '📋',
-                exe: '⚙️', dmg: '💿', iso: '💿'
-            };
-            return map[ext] || '📎';
-        }
-
-        function getFileType(name) {
-            var ext = name.split('.').pop().toLowerCase();
-            var img = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
-            var doc = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'csv', 'ppt', 'pptx'];
-            if (img.indexOf(ext) !== -1) return 'image';
-            if (doc.indexOf(ext) !== -1) return 'document';
-            return 'other';
-        }
-
-        function showToast(message, type) {
-            type = type || 'success';
-            var toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type;
-            toast.classList.add('show');
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(function() {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        function saveData() {
-            localStorage.setItem('gitpo_folders_v7', JSON.stringify(data));
-            localStorage.setItem('gitpo_expanded_v7', JSON.stringify(expandedFolders));
-        }
-
-        function render() {
-            var root = findFolder('root');
-            if (!root) {
-                data.folders = [{ id: 'root', name: 'Root', parent: null, files: [] }];
-            }
-            saveData();
-
-            var html = renderFolder('root', 0);
-            document.getElementById('folderTree').innerHTML = html;
-
-            var totalFiles = getTotalFiles();
-            document.getElementById('folderCount').textContent = data.folders.length - 1;
-            document.getElementById('fileCount').textContent = totalFiles;
-            document.getElementById('totalSize').textContent = formatSize(getTotalSize());
-            document.getElementById('totalBadge').textContent = totalFiles;
-
-            if (searchQuery.trim()) filterItems();
-        }
-
-        function renderFolder(folderId, depth) {
-            var folder = findFolder(folderId);
-            if (!folder) return '';
-
-            var isExpanded = expandedFolders.indexOf(folderId) !== -1;
-            var childFolders = getChildFolders(folderId);
-            var files = getFolderFiles(folderId);
-            var isRoot = folderId === 'root';
-
-            var filteredFiles = files;
-            if (currentView === 'images') {
-                filteredFiles = files.filter(function(f) { return getFileType(f.name) === 'image'; });
-            } else if (currentView === 'docs') {
-                filteredFiles = files.filter(function(f) { return getFileType(f.name) === 'document'; });
-            }
-
-            if (searchQuery.trim()) {
-                var q = searchQuery.toLowerCase().trim();
-                var nameMatch = folder.name.toLowerCase().indexOf(q) !== -1;
-                var fileMatch = files.some(function(f) { return f.name.toLowerCase().indexOf(q) !== -1; });
-                var childMatch = childFolders.some(function(f) { return f.name.toLowerCase().indexOf(q) !== -1; });
-                if (!nameMatch && !fileMatch && !childMatch) {
-                    var hasChildMatch = false;
-                    for (var i = 0; i < childFolders.length; i++) {
-                        if (renderFolder(childFolders[i].id, depth + 1)) hasChildMatch = true;
-                    }
-                    if (!hasChildMatch && !fileMatch) return '';
-                }
-            }
-
-            var html = '<div class="folder-item">';
-
-            if (!isRoot) {
-                var total = files.length + childFolders.length;
-                html += '<div class="folder-header" onclick="toggleFolder(\'' + folderId + '\')">';
-                html += '<span class="arrow' + (isExpanded ? ' open' : '') + '">▶</span>';
-                html += '<span class="folder-icon">📁</span>';
-                html += '<span class="folder-name">' + folder.name + '</span>';
-                html += '<span class="folder-count">(' + total + ')</span>';
-                html += '<div class="folder-actions" onclick="event.stopPropagation();">';
-                html += '<button class="btn-sm" style="background:#48bb78;color:white;" onclick="uploadToFolder(\'' + folderId + '\')">📤</button>';
-                html += '<button class="btn-sm" style="background:#fc8181;color:white;" onclick="deleteFolder(\'' + folderId + '\')">🗑️</button>';
-                html += '</div></div>';
-            } else {
-                html += '<div class="folder-header" style="cursor:default;background:var(--bg-body);border-bottom:1px solid var(--border-color);">';
-                html += '<span style="font-weight:700;">📂 Semua Folder</span>';
-                html += '<span style="margin-left:8px;font-size:0.7rem;color:var(--text-light);">(' + (data.folders.length - 1) + ' folder, ' + getTotalFiles() + ' file)</span>';
-                html += '</div>';
-            }
-
-            html += '<div class="folder-content' + (isExpanded || isRoot ? ' open' : '') + '">';
-
-            for (var j = 0; j < childFolders.length; j++) {
-                html += renderFolder(childFolders[j].id, depth + 1);
-            }
-
-            if (filteredFiles.length > 0) {
-                for (var k = 0; k < filteredFiles.length; k++) {
-                    var file = filteredFiles[k];
-                    var isImage = getFileType(file.name) === 'image';
-                    html += '<div class="file-item">';
-                    html += '<div class="file-left">';
-                    html += '<span class="icon">' + getFileIcon(file.name) + '</span>';
-                    html += '<span class="name">' + file.name + '</span>';
-                    html += '<span class="ext">' + file.name.split('.').pop().toUpperCase() + '</span>';
-                    html += '</div>';
-                    html += '<div class="file-right">';
-                    html += '<span class="size">' + formatSize(file.size) + '</span>';
-                    if (isImage) {
-                        html += '<button class="btn-sm view" onclick="viewFile(\'' + folderId + '\',\'' + file.id + '\')">👁️</button>';
-                    }
-                    html += '<button class="btn-sm rename" onclick="renameFile(\'' + folderId + '\',\'' + file.id + '\')">✏️</button>';
-                    html += '<button class="btn-sm download" onclick="downloadFile(\'' + folderId + '\',\'' + file.id + '\')">⬇️</button>';
-                    html += '<button class="btn-sm delete" onclick="deleteFile(\'' + folderId + '\',\'' + file.id + '\')">🗑️</button>';
-                    html += '</div></div>';
-                }
-            } else {
-                if (!searchQuery.trim() || (currentView === 'all' && childFolders.length === 0)) {
-                    html += '<div class="empty-state"><div class="icon">📭</div><p style="font-size:0.8rem;">Folder kosong</p></div>';
-                }
-            }
-
-            html += '</div></div>';
-            return html;
-        }
-
-        function toggleFolder(id) {
-            var idx = expandedFolders.indexOf(id);
-            if (idx !== -1) {
-                expandedFolders.splice(idx, 1);
-            } else {
-                expandedFolders.push(id);
-            }
-            render();
-        }
-
-        function showNewFolderModal() {
-            document.getElementById('newFolderModal').classList.add('active');
-            document.getElementById('newFolderName').value = '';
-            document.getElementById('newFolderName').focus();
-        }
-
-        function closeNewFolderModal() {
-            document.getElementById('newFolderModal').classList.remove('active');
-        }
-
-        function createFolder() {
-            var name = document.getElementById('newFolderName').value.trim();
-            if (!name) {
-                showToast('Masukkan nama folder!', 'error');
-                return;
-            }
-            data.folders.push({ id: generateId(), name: name, parent: 'root', files: [] });
-            expandedFolders.push('root');
-            render();
-            closeNewFolderModal();
-            showToast('📁 Folder "' + name + '" berhasil dibuat!');
-        }
-
-        function deleteFolder(id) {
-            if (id === 'root') {
-                showToast('Tidak bisa menghapus Root!', 'error');
-                return;
-            }
-            var folder = findFolder(id);
-            if (!folder) return;
-            if (!confirm('Hapus folder "' + folder.name + '" dan semua isinya?')) return;
-            data.folders = data.folders.filter(function(f) { return f.id !== id; });
-            data.folders = data.folders.filter(function(f) { return f.parent !== id; });
-            expandedFolders = expandedFolders.filter(function(f) { return f !== id; });
-            render();
-            showToast('🗑️ Folder "' + folder.name + '" dihapus!');
-        }
-
-        function triggerUpload() {
-            document.getElementById('fileInput').click();
-        }
-
-        function uploadFilesToFolder(folderId, fileList) {
-            var folder = findFolder(folderId);
-            if (!folder) {
-                showToast('Folder tidak ditemukan!', 'error');
-                return;
-            }
-            var count = 0;
-            var total = fileList.length;
-            for (var i = 0; i < total; i++) {
-                var file = fileList[i];
-                if (file.size > 10 * 1024 * 1024) {
-                    showToast('⚠️ ' + file.name + ' terlalu besar. Maks 10MB.', 'error');
-                    continue;
-                }
-                var reader = new FileReader();
-                reader.onload = function(f, folderRef) {
-                    return function(e) {
-                        folderRef.files.push({
-                            id: generateId(),
-                            name: f.name,
-                            data: e.target.result,
-                            size: f.size,
-                            type: f.type,
-                            date: Date.now()
-                        });
-                        count++;
-                        if (count === total) {
-                            render();
-                            showToast('✅ ' + count + ' file berhasil diupload ke "' + folderRef.name + '"');
-                        }
-                    };
-                }(file, folder);
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function uploadToFolder(folderId) {
-            var input = document.createElement('input');
-            input.type = 'file';
-            input.multiple = true;
-            input.onchange = function() {
-                if (this.files.length > 0) {
-                    uploadFilesToFolder(folderId, this.files);
-                }
-                this.value = '';
-            };
-            input.click();
-        }
-
-        function deleteFile(folderId, fileId) {
-            if (!confirm('Hapus file ini?')) return;
-            var folder = findFolder(folderId);
-            if (!folder) return;
-            var file = folder.files.find(function(f) { return f.id === fileId; });
-            folder.files = folder.files.filter(function(f) { return f.id !== fileId; });
-            render();
-            showToast('🗑️ File "' + (file ? file.name : '') + '" dihapus!');
-        }
-
-        function downloadFile(folderId, fileId) {
-            var folder = findFolder(folderId);
-            if (!folder) return;
-            var file = folder.files.find(function(f) { return f.id === fileId; });
-            if (!file) return;
-            var a = document.createElement('a');
-            a.href = file.data;
-            a.download = file.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        function viewFile(folderId, fileId) {
-            var folder = findFolder(folderId);
-            if (!folder) return;
-            var file = folder.files.find(function(f) { return f.id === fileId; });
-            if (!file) return;
-            var lightbox = document.getElementById('lightbox');
-            var img = document.getElementById('lightboxImage');
-            var info = document.getElementById('lightboxInfo');
-            img.src = file.data;
-            info.textContent = file.name + ' • ' + formatSize(file.size);
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        function renameFile(folderId, fileId) {
-            var folder = findFolder(folderId);
-            if (!folder) return;
-            var file = folder.files.find(function(f) { return f.id === fileId; });
-            if (!file) return;
-            var newName = prompt('Nama file baru:', file.name);
-            if (newName && newName.trim()) {
-                file.name = newName.trim();
-                render();
-                showToast('✏️ File diubah menjadi "' + newName.trim() + '"');
-            }
-        }
-
-        function clearAll() {
-            if (!confirm('Hapus SEMUA folder dan file?')) return;
-            data.folders = [{ id: 'root', name: 'Root', parent: null, files: [] }];
-            expandedFolders = ['root'];
-            render();
-            showToast('🗑️ Semua data dihapus!');
-        }
-
-        function switchView(view) {
-            currentView = view;
-            var items = document.querySelectorAll('.sidebar .menu-item');
-            for (var i = 0; i < items.length; i++) {
-                items[i].classList.remove('active');
-            }
-            var titles = { all: '📂 Semua Folder', images: '🖼️ Foto', docs: '📄 Dokumen' };
-            document.getElementById('pageTitle').textContent = titles[view] || '📂 Semua Folder';
-            render();
-        }
-
-        function filterItems() {
-            searchQuery = document.getElementById('searchInput').value;
-            render();
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            var label = document.getElementById('themeLabel');
-            var icon = document.getElementById('themeIcon');
-            var isDark = document.body.classList.contains('dark-mode');
-            label.textContent = isDark ? 'Light' : 'Dark';
-            icon.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('gitpo_theme', isDark ? 'dark' : 'light');
-        }
-
-        if (localStorage.getItem('gitpo_theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('themeLabel').textContent = 'Light';
-            document.getElementById('themeIcon').textContent = '☀️';
-        }
-
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            if (this.files.length > 0) {
-                uploadFilesToFolder('root', this.files);
-            }
-            this.value = '';
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeLightbox();
-                closeNewFolderModal();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
-                e.preventDefault();
-                document.getElementById('fileInput').click();
-            }
-        });
-
-        var uploadBox = document.getElementById('uploadBox');
-        uploadBox.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
-        });
-        uploadBox.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-        });
-        uploadBox.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-            var files = e.dataTransfer.files;
-            if (files.length > 0) {
-                uploadFilesToFolder('root', files);
-            }
-        });
-
-        render();
-        console.log('gitpo v7.1 ready');
-    </script>
+<div class="app">
+<aside class="sidebar">
+<div class="logo">📁 gitpo <span>v8</span></div>
+<div class="menu-label">Menu</div>
+<a class="menu-item active" onclick="switchView('all')"><span>📂</span> Semua Folder <span class="badge" id="totalBadge">0</span></a>
+<a class="menu-item" onclick="switchView('images')"><span>🖼️</span> Foto</a>
+<a class="menu-item" onclick="switchView('docs')"><span>📄</span> Dokumen</a>
+<a class="menu-item" onclick="toggleTheme()"><span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span></a>
+</aside>
+<main class="main">
+<div class="main-header">
+<h1 id="pageTitle">📂 Semua Folder</h1>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button class="btn btn-primary" onclick="showNewFolderModal()">📁 Buat Folder</button>
+<button class="btn btn-success" onclick="triggerUpload()">📤 Upload</button>
+<button class="btn btn-outline" onclick="clearAll()">🗑️ Kosongkan</button>
+</div>
+<input type="file" id="fileInput" multiple style="display:none">
+</div>
+<div class="toolbar">
+<div class="info">📁 <span id="folderCount">0</span> folder • 📄 <span id="fileCount">0</span> file • 💾 <span id="totalSize">0 KB</span></div>
+<div class="search"><input type="text" id="searchInput" placeholder="🔍 Cari..." oninput="filterItems()"></div>
+</div>
+<div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+<p>📤 Klik untuk upload atau drag & drop file ke sini</p>
+<div class="hint">Support semua jenis file | Maks 10MB</div>
+</div>
+<div class="folder-tree" id="folderTree"></div>
+</main>
+</div>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+<button class="close-lightbox" onclick="closeLightbox()">✕</button>
+<img id="lightboxImage" src="" alt="Preview">
+<div class="lightbox-info" id="lightboxInfo"></div>
+</div>
+<div class="modal-overlay" id="newFolderModal" onclick="closeNewFolderModal()">
+<div class="modal-box" onclick="event.stopPropagation()">
+<h3>📁 Buat Folder Baru</h3>
+<input type="text" id="newFolderName" placeholder="Nama folder..." onkeydown="if(event.key==='Enter') createFolder()">
+<div class="modal-actions">
+<button class="btn btn-outline" onclick="closeNewFolderModal()">Batal</button>
+<button class="btn btn-primary" onclick="createFolder()">Buat</button>
+</div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var data=JSON.parse(localStorage.getItem('gitpo_folders_v8'))||{folders:[{id:'root',name:'Root',parent:null,files:[]}]};
+var currentView='all',searchQuery='',expandedFolders=JSON.parse(localStorage.getItem('gitpo_expanded_v8'))||['root'];
+function generateId(){return Date.now()+'_'+Math.random().toString(36).substr(2,8)}
+function findFolder(id){return data.folders.find(function(f){return f.id===id})}
+function getChildFolders(parentId){return data.folders.filter(function(f){return f.parent===parentId})}
+function getFolderFiles(folderId){var f=findFolder(folderId);return f?f.files||[]:[]}
+function getTotalFiles(){var t=0;for(var i=0;i<data.folders.length;i++){t+=data.folders[i].files?data.folders[i].files.length:0}return t}
+function getTotalSize(){var t=0;for(var i=0;i<data.folders.length;i++){var files=data.folders[i].files||[];for(var j=0;j<files.length;j++){t+=files[j].size||0}}return t}
+function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+function getFileIcon(n){var e=n.split('.').pop().toLowerCase(),m={jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',webp:'🖼️',svg:'🖼️',pdf:'📄',doc:'📝',docx:'📝',txt:'📃',rtf:'📃',xls:'📊',xlsx:'📊',csv:'📊',ppt:'📽️',pptx:'📽️',zip:'📦',rar:'📦','7z':'📦',tar:'📦',gz:'📦',mp3:'🎵',wav:'🎵',mp4:'🎬',avi:'🎬',mkv:'🎬',html:'🌐',css:'🎨',js:'⚡',php:'🐘',py:'🐍',json:'📋',exe:'⚙️',dmg:'💿',iso:'💿'};return m[e]||'📎'}
+function getFileType(n){var e=n.split('.').pop().toLowerCase(),img=['jpg','jpeg','png','gif','webp','svg','bmp','ico'],doc=['pdf','doc','docx','txt','rtf','odt','xls','xlsx','csv','ppt','pptx'];if(img.indexOf(e)!==-1)return'image';if(doc.indexOf(e)!==-1)return'document';return'other'}
+function showToast(msg,type){type=type||'success';var t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show')},3000)}
+function saveData(){localStorage.setItem('gitpo_folders_v8',JSON.stringify(data));localStorage.setItem('gitpo_expanded_v8',JSON.stringify(expandedFolders))}
+function render(){var root=findFolder('root');if(!root){data.folders=[{id:'root',name:'Root',parent:null,files:[]}]}saveData();var html=renderFolder('root',0);document.getElementById('folderTree').innerHTML=html;var totalFiles=getTotalFiles();document.getElementById('folderCount').textContent=data.folders.length-1;document.getElementById('fileCount').textContent=totalFiles;document.getElementById('totalSize').textContent=formatSize(getTotalSize());document.getElementById('totalBadge').textContent=totalFiles;if(searchQuery.trim())filterItems()}
+function renderFolder(folderId,depth){var folder=findFolder(folderId);if(!folder)return'';var isExpanded=expandedFolders.indexOf(folderId)!==-1;var childFolders=getChildFolders(folderId);var files=getFolderFiles(folderId);var isRoot=folderId==='root';var filteredFiles=files;if(currentView==='images'){filteredFiles=files.filter(function(f){return getFileType(f.name)==='image'})}else if(currentView==='docs'){filteredFiles=files.filter(function(f){return getFileType(f.name)==='document'})}if(searchQuery.trim()){var q=searchQuery.toLowerCase().trim();var nameMatch=folder.name.toLowerCase().indexOf(q)!==-1;var fileMatch=files.some(function(f){return f.name.toLowerCase().indexOf(q)!==-1});var childMatch=childFolders.some(function(f){return f.name.toLowerCase().indexOf(q)!==-1});if(!nameMatch&&!fileMatch&&!childMatch){var hasChildMatch=false;for(var i=0;i<childFolders.length;i++){if(renderFolder(childFolders[i].id,depth+1))hasChildMatch=true}if(!hasChildMatch&&!fileMatch)return''}}var html='<div class="folder-item">';if(!isRoot){var total=files.length+childFolders.length;html+='<div class="folder-header" onclick="toggleFolder(\''+folderId+'\')">';html+='<span class="arrow'+(isExpanded?' open':'')+'">▶</span>';html+='<span class="folder-icon">📁</span>';html+='<span class="folder-name">'+folder.name+'</span>';html+='<span class="folder-count">('+total+')</span>';html+='<div class="folder-actions" onclick="event.stopPropagation();">';html+='<button class="btn-sm" style="background:#48bb78;color:white;" onclick="uploadToFolder(\''+folderId+'\')">📤</button>';html+='<button class="btn-sm" style="background:#fc8181;color:white;" onclick="deleteFolder(\''+folderId+'\')">🗑️</button>';html+='</div></div>'}else{html+='<div class="folder-header" style="cursor:default;background:var(--bg-body);border-bottom:1px solid var(--border-color);">';html+='<span style="font-weight:700;">📂 Semua Folder</span>';html+='<span style="margin-left:8px;font-size:0.7rem;color:var(--text-light);">('+(data.folders.length-1)+' folder, '+getTotalFiles()+' file)</span>';html+='</div>'}html+='<div class="folder-content'+(isExpanded||isRoot?' open':'')+'">';for(var j=0;j<childFolders.length;j++){html+=renderFolder(childFolders[j].id,depth+1)}if(filteredFiles.length>0){for(var k=0;k<filteredFiles.length;k++){var file=filteredFiles[k];var isImage=getFileType(file.name)==='image';html+='<div class="file-item">';html+='<div class="file-left">';html+='<span class="icon">'+getFileIcon(file.name)+'</span>';html+='<span class="name">'+file.name+'</span>';html+='<span class="ext">'+file.name.split('.').pop().toUpperCase()+'</span>';html+='</div>';html+='<div class="file-right">';html+='<span class="size">'+formatSize(file.size)+'</span>';if(isImage){html+='<button class="btn-sm view" onclick="viewFile(\''+folderId+'\',\''+file.id+'\')">👁️</button>'}html+='<button class="btn-sm rename" onclick="renameFile(\''+folderId+'\',\''+file.id+'\')">✏️</button>';html+='<button class="btn-sm download" onclick="downloadFile(\''+folderId+'\',\''+file.id+'\')">⬇️</button>';html+='<button class="btn-sm delete" onclick="deleteFile(\''+folderId+'\',\''+file.id+'\')">🗑️</button>';html+='</div></div>'}}else{if(!searchQuery.trim()||(currentView==='all'&&childFolders.length===0)){html+='<div class="empty-state"><div class="icon">📭</div><p style="font-size:0.8rem;">Folder kosong</p></div>'}}html+='</div></div>';return html}
+function toggleFolder(id){var idx=expandedFolders.indexOf(id);if(idx!==-1){expandedFolders.splice(idx,1)}else{expandedFolders.push(id)}render()}
+function showNewFolderModal(){document.getElementById('newFolderModal').classList.add('active');document.getElementById('newFolderName').value='';document.getElementById('newFolderName').focus()}
+function closeNewFolderModal(){document.getElementById('newFolderModal').classList.remove('active')}
+function createFolder(){var name=document.getElementById('newFolderName').value.trim();if(!name){showToast('Masukkan nama folder!','error');return}data.folders.push({id:generateId(),name:name,parent:'root',files:[]});expandedFolders.push('root');render();closeNewFolderModal();showToast('📁 Folder "'+name+'" berhasil dibuat!')}
+function deleteFolder(id){if(id==='root'){showToast('Tidak bisa menghapus Root!','error');return}var folder=findFolder(id);if(!folder)return;if(!confirm('Hapus folder "'+folder.name+'" dan semua isinya?'))return;data.folders=data.folders.filter(function(f){return f.id!==id});data.folders=data.folders.filter(function(f){return f.parent!==id});expandedFolders=expandedFolders.filter(function(f){return f!==id});render();showToast('🗑️ Folder "'+folder.name+'" dihapus!')}
+function triggerUpload(){document.getElementById('fileInput').click()}
+function uploadFilesToFolder(folderId,fileList){var folder=findFolder(folderId);if(!folder){showToast('Folder tidak ditemukan!','error');return}var count=0,total=fileList.length;for(var i=0;i<total;i++){var file=fileList[i];if(file.size>10*1024*1024){showToast('⚠️ '+file.name+' terlalu besar. Maks 10MB.','error');continue}var reader=new FileReader();reader.onload=function(f,folderRef){return function(e){folderRef.files.push({id:generateId(),name:f.name,data:e.target.result,size:f.size,type:f.type,date:Date.now()});count++;if(count===total){render();showToast('✅ '+count+' file berhasil diupload ke "'+folderRef.name+'"')}}}(file,folder);reader.readAsDataURL(file)}}
+function uploadToFolder(folderId){var input=document.createElement('input');input.type='file';input.multiple=true;input.onchange=function(){if(this.files.length>0){uploadFilesToFolder(folderId,this.files)}this.value=''};input.click()}
+function deleteFile(folderId,fileId){if(!confirm('Hapus file ini?'))return;var folder=findFolder(folderId);if(!folder)return;var file=folder.files.find(function(f){return f.id===fileId});folder.files=folder.files.filter(function(f){return f.id!==fileId});render();showToast('🗑️ File "'+(file?file.name:'')+'" dihapus!')}
+function downloadFile(folderId,fileId){var folder=findFolder(folderId);if(!folder)return;var file=folder.files.find(function(f){return f.id===fileId});if(!file)return;var a=document.createElement('a');a.href=file.data;a.download=file.name;document.body.appendChild(a);a.click();document.body.removeChild(a)}
+function viewFile(folderId,fileId){var folder=findFolder(folderId);if(!folder)return;var file=folder.files.find(function(f){return f.id===fileId});if(!file)return;var lightbox=document.getElementById('lightbox');var img=document.getElementById('lightboxImage');var info=document.getElementById('lightboxInfo');img.src=file.data;info.textContent=file.name+' • '+formatSize(file.size);lightbox.classList.add('active');document.body.style.overflow='hidden'}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('active');document.body.style.overflow=''}
+function renameFile(folderId,fileId){var folder=findFolder(folderId);if(!folder)return;var file=folder.files.find(function(f){return f.id===fileId});if(!file)return;var newName=prompt('Nama file baru:',file.name);if(newName&&newName.trim()){file.name=newName.trim();render();showToast('✏️ File diubah menjadi "'+newName.trim()+'"')}}
+function clearAll(){if(!confirm('Hapus SEMUA folder dan file?'))return;data.folders=[{id:'root',name:'Root',parent:null,files:[]}];expandedFolders=['root'];render();showToast('🗑️ Semua data dihapus!')}
+function switchView(view){currentView=view;var items=document.querySelectorAll('.sidebar .menu-item');for(var i=0;i<items.length;i++){items[i].classList.remove('active')}var titles={all:'📂 Semua Folder',images:'🖼️ Foto',docs:'📄 Dokumen'};document.getElementById('pageTitle').textContent=titles[view]||'📂 Semua Folder';render()}
+function filterItems(){searchQuery=document.getElementById('searchInput').value;render()}
+function toggleTheme(){document.body.classList.toggle('dark-mode');var label=document.getElementById('themeLabel'),icon=document.getElementById('themeIcon'),isDark=document.body.classList.contains('dark-mode');label.textContent=isDark?'Light':'Dark';icon.textContent=isDark?'☀️':'🌙';localStorage.setItem('gitpo_theme',isDark?'dark':'light')}
+if(localStorage.getItem('gitpo_theme')==='dark'){document.body.classList.add('dark-mode');document.getElementById('themeLabel').textContent='Light';document.getElementById('themeIcon').textContent='☀️'}
+document.getElementById('fileInput').addEventListener('change',function(e){if(this.files.length>0){uploadFilesToFolder('root',this.files)}this.value=''});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeLightbox();closeNewFolderModal()}if((e.ctrlKey||e.metaKey)&&e.key==='o'){e.preventDefault();document.getElementById('fileInput').click()}});
+var uploadBox=document.getElementById('uploadBox');uploadBox.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('dragover')});uploadBox.addEventListener('dragleave',function(e){e.preventDefault();this.classList.remove('dragover')});uploadBox.addEventListener('drop',function(e){e.preventDefault();this.classList.remove('dragover');var files=e.dataTransfer.files;if(files.length>0){uploadFilesToFolder('root',files)}});
+render();console.log('gitpo v8 ready');
+</script>
 </body>
 </html>
