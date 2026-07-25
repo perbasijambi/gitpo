@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📁 gitpo - File Manager</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-body: #f0f2f5;
             --bg-sidebar: #1a202c;
@@ -138,7 +134,6 @@
         }
         .upload-box:hover { border-color: var(--primary); background: var(--bg-body); }
         .upload-box input[type="file"] { display: none; }
-        .upload-box label { cursor: pointer; color: var(--primary); font-weight: 600; }
         .upload-box .hint { font-size: 0.75rem; color: var(--text-light); margin-top: 3px; }
         .upload-box.dragover { border-color: var(--success); background: rgba(72,187,120,0.1); }
         .folder-tree {
@@ -282,31 +277,6 @@
             margin-bottom: 15px;
         }
         .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-        .context-menu {
-            display: none;
-            position: fixed;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            padding: 6px 0;
-            z-index: 10001;
-            min-width: 160px;
-        }
-        .context-menu.active { display: block; }
-        .context-menu .menu-item {
-            padding: 6px 16px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-dark);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .context-menu .menu-item:hover { background: var(--bg-body); }
-        .context-menu .menu-item.danger { color: var(--danger); }
-        .context-menu .divider { height: 1px; background: var(--border-color); margin: 4px 12px; }
         @media (max-width: 768px) {
             .app { flex-direction: column; }
             .sidebar { width: 100%; height: auto; position: relative; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 4px; }
@@ -327,9 +297,8 @@
 </head>
 <body>
     <div class="app">
-        <!-- SIDEBAR -->
         <aside class="sidebar">
-            <div class="logo">📁 gitpo <span>v6</span></div>
+            <div class="logo">📁 gitpo <span>v7.1</span></div>
             <div class="menu-label">Menu</div>
             <a class="menu-item active" onclick="switchView('all')">
                 <span>📂</span> Semua Folder
@@ -346,7 +315,6 @@
             </a>
         </aside>
 
-        <!-- MAIN -->
         <main class="main">
             <div class="main-header">
                 <h1 id="pageTitle">📂 Semua Folder</h1>
@@ -364,15 +332,13 @@
                     📄 <span id="fileCount">0</span> file •
                     💾 <span id="totalSize">0 KB</span>
                 </div>
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <div class="search">
-                        <input type="text" id="searchInput" placeholder="🔍 Cari..." oninput="filterItems()">
-                    </div>
+                <div class="search">
+                    <input type="text" id="searchInput" placeholder="🔍 Cari..." oninput="filterItems()">
                 </div>
             </div>
 
             <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
-                <p>📤 <label>Klik untuk upload</label> atau drag & drop file ke sini</p>
+                <p>📤 Klik untuk upload atau drag & drop file ke sini</p>
                 <div class="hint">Support semua jenis file | Maks 10MB</div>
             </div>
 
@@ -380,24 +346,12 @@
         </main>
     </div>
 
-    <!-- CONTEXT MENU -->
-    <div class="context-menu" id="contextMenu">
-        <div class="menu-item" onclick="contextAction('rename')">✏️ Rename</div>
-        <div class="menu-item" onclick="contextAction('cut')">✂️ Cut</div>
-        <div class="menu-item" onclick="contextAction('copy')">📋 Copy</div>
-        <div class="menu-item" onclick="contextAction('paste')">📥 Paste</div>
-        <div class="divider"></div>
-        <div class="menu-item danger" onclick="contextAction('delete')">🗑️ Delete</div>
-    </div>
-
-    <!-- LIGHTBOX -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <button class="close-lightbox" onclick="closeLightbox()">✕</button>
         <img id="lightboxImage" src="" alt="Preview">
         <div class="lightbox-info" id="lightboxInfo"></div>
     </div>
 
-    <!-- NEW FOLDER MODAL -->
     <div class="modal-overlay" id="newFolderModal" onclick="closeNewFolderModal()">
         <div class="modal-box" onclick="event.stopPropagation()">
             <h3>📁 Buat Folder Baru</h3>
@@ -409,57 +363,47 @@
         </div>
     </div>
 
-    <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // ============================================
-        //  DATA & STATE
-        // ============================================
-        let data = JSON.parse(localStorage.getItem('gitpo_folders_v6')) || {
+        var data = JSON.parse(localStorage.getItem('gitpo_folders_v7')) || {
             folders: [{ id: 'root', name: 'Root', parent: null, files: [] }]
         };
-        let currentView = 'all';
-        let searchQuery = '';
-        let expandedFolders = JSON.parse(localStorage.getItem('gitpo_expanded_v6')) || ['root'];
-        let clipboard = { items: [], action: null };
-        let contextTarget = null;
+        var currentView = 'all';
+        var searchQuery = '';
+        var expandedFolders = JSON.parse(localStorage.getItem('gitpo_expanded_v7')) || ['root'];
 
-        // ============================================
-        //  HELPERS
-        // ============================================
         function generateId() {
             return Date.now() + '_' + Math.random().toString(36).substr(2, 8);
         }
 
         function findFolder(id) {
-            return data.folders.find(f => f.id === id);
+            return data.folders.find(function(f) { return f.id === id; });
         }
 
         function getChildFolders(parentId) {
-            return data.folders.filter(f => f.parent === parentId);
+            return data.folders.filter(function(f) { return f.parent === parentId; });
         }
 
         function getFolderFiles(folderId) {
-            const folder = findFolder(folderId);
+            var folder = findFolder(folderId);
             return folder ? folder.files || [] : [];
         }
 
         function getTotalFiles() {
-            let total = 0;
-            for (const f of data.folders) {
-                total += f.files ? f.files.length : 0;
+            var total = 0;
+            for (var i = 0; i < data.folders.length; i++) {
+                total += data.folders[i].files ? data.folders[i].files.length : 0;
             }
             return total;
         }
 
         function getTotalSize() {
-            let total = 0;
-            for (const f of data.folders) {
-                if (f.files) {
-                    for (const file of f.files) {
-                        total += file.size || 0;
-                    }
+            var total = 0;
+            for (var i = 0; i < data.folders.length; i++) {
+                var files = data.folders[i].files || [];
+                for (var j = 0; j < files.length; j++) {
+                    total += files[j].size || 0;
                 }
             }
             return total;
@@ -472,12 +416,13 @@
         }
 
         function getFileIcon(name) {
-            const ext = name.split('.').pop().toLowerCase();
-            const map = {
+            var ext = name.split('.').pop().toLowerCase();
+            var map = {
                 jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', webp: '🖼️', svg: '🖼️',
                 pdf: '📄', doc: '📝', docx: '📝', txt: '📃', rtf: '📃',
                 xls: '📊', xlsx: '📊', csv: '📊',
                 ppt: '📽️', pptx: '📽️',
+                zip: '📦', rar: '📦', 7z: '📦', tar: '📦', gz: '📦',
                 mp3: '🎵', wav: '🎵', mp4: '🎬', avi: '🎬', mkv: '🎬',
                 html: '🌐', css: '🎨', js: '⚡', php: '🐘', py: '🐍', json: '📋',
                 exe: '⚙️', dmg: '💿', iso: '💿'
@@ -486,11 +431,11 @@
         }
 
         function getFileType(name) {
-            const ext = name.split('.').pop().toLowerCase();
-            const img = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
-            const doc = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'csv', 'ppt', 'pptx'];
-            if (img.includes(ext)) return 'image';
-            if (doc.includes(ext)) return 'document';
+            var ext = name.split('.').pop().toLowerCase();
+            var img = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+            var doc = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'csv', 'ppt', 'pptx'];
+            if (img.indexOf(ext) !== -1) return 'image';
+            if (doc.indexOf(ext) !== -1) return 'document';
             return 'other';
         }
 
@@ -506,12 +451,9 @@
             }, 3000);
         }
 
-        // ============================================
-        //  SAVE & RENDER
-        // ============================================
         function saveData() {
-            localStorage.setItem('gitpo_folders_v6', JSON.stringify(data));
-            localStorage.setItem('gitpo_expanded_v6', JSON.stringify(expandedFolders));
+            localStorage.setItem('gitpo_folders_v7', JSON.stringify(data));
+            localStorage.setItem('gitpo_expanded_v7', JSON.stringify(expandedFolders));
         }
 
         function render() {
@@ -619,9 +561,6 @@
             return html;
         }
 
-        // ============================================
-        //  FOLDER OPERATIONS
-        // ============================================
         function toggleFolder(id) {
             var idx = expandedFolders.indexOf(id);
             if (idx !== -1) {
@@ -663,31 +602,13 @@
             var folder = findFolder(id);
             if (!folder) return;
             if (!confirm('Hapus folder "' + folder.name + '" dan semua isinya?')) return;
-            var toDelete = [id];
-            var children = data.folders.filter(function(f) { return f.parent === id; });
-            for (var i = 0; i < children.length; i++) {
-                toDelete.push(children[i].id);
-            }
-            data.folders = data.folders.filter(function(f) { return toDelete.indexOf(f.id) === -1; });
-            expandedFolders = expandedFolders.filter(function(f) { return toDelete.indexOf(f) === -1; });
+            data.folders = data.folders.filter(function(f) { return f.id !== id; });
+            data.folders = data.folders.filter(function(f) { return f.parent !== id; });
+            expandedFolders = expandedFolders.filter(function(f) { return f !== id; });
             render();
             showToast('🗑️ Folder "' + folder.name + '" dihapus!');
         }
 
-        function renameFolder(id) {
-            var folder = findFolder(id);
-            if (!folder) return;
-            var newName = prompt('Nama folder baru:', folder.name);
-            if (newName && newName.trim()) {
-                folder.name = newName.trim();
-                render();
-                showToast('✏️ Folder diubah menjadi "' + newName.trim() + '"');
-            }
-        }
-
-        // ============================================
-        //  UPLOAD FUNCTIONS
-        // ============================================
         function triggerUpload() {
             document.getElementById('fileInput').click();
         }
@@ -707,9 +628,9 @@
                     continue;
                 }
                 var reader = new FileReader();
-                reader.onload = function(e, f) {
+                reader.onload = function(f, folderRef) {
                     return function(e) {
-                        folder.files.push({
+                        folderRef.files.push({
                             id: generateId(),
                             name: f.name,
                             data: e.target.result,
@@ -720,10 +641,10 @@
                         count++;
                         if (count === total) {
                             render();
-                            showToast('✅ ' + count + ' file berhasil diupload ke "' + folder.name + '"');
+                            showToast('✅ ' + count + ' file berhasil diupload ke "' + folderRef.name + '"');
                         }
                     };
-                }(reader, file);
+                }(file, folder);
                 reader.readAsDataURL(file);
             }
         }
@@ -741,9 +662,6 @@
             input.click();
         }
 
-        // ============================================
-        //  FILE OPERATIONS
-        // ============================================
         function deleteFile(folderId, fileId) {
             if (!confirm('Hapus file ini?')) return;
             var folder = findFolder(folderId);
@@ -803,135 +721,15 @@
             if (!confirm('Hapus SEMUA folder dan file?')) return;
             data.folders = [{ id: 'root', name: 'Root', parent: null, files: [] }];
             expandedFolders = ['root'];
-            clipboard = { items: [], action: null };
             render();
             showToast('🗑️ Semua data dihapus!');
         }
 
-        // ============================================
-        //  CLIPBOARD
-        // ============================================
-        function cutItem(type, folderId, fileId) {
-            clipboard.action = 'cut';
-            clipboard.items = [{ type: type, folderId: folderId, fileId: fileId }];
-            render();
-            showToast('✂️ Dipotong: ' + (type === 'folder' ? 'folder' : 'file'));
-        }
-
-        function copyItem(type, folderId, fileId) {
-            clipboard.action = 'copy';
-            clipboard.items = [{ type: type, folderId: folderId, fileId: fileId }];
-            render();
-            showToast('📋 Disalin: ' + (type === 'folder' ? 'folder' : 'file'));
-        }
-
-        function pasteItem(targetFolderId) {
-            if (clipboard.items.length === 0) {
-                showToast('Clipboard kosong!', 'error');
-                return;
-            }
-            var target = findFolder(targetFolderId);
-            if (!target) {
-                showToast('Folder tujuan tidak ditemukan!', 'error');
-                return;
-            }
-            var pasted = 0;
-            for (var i = 0; i < clipboard.items.length; i++) {
-                var item = clipboard.items[i];
-                if (item.type === 'folder') {
-                    var src = findFolder(item.folderId);
-                    if (!src) continue;
-                    var newFolder = {
-                        id: generateId(),
-                        name: src.name + (clipboard.action === 'copy' ? ' (copy)' : ''),
-                        parent: targetFolderId,
-                        files: JSON.parse(JSON.stringify(src.files || []))
-                    };
-                    data.folders.push(newFolder);
-                    if (clipboard.action === 'cut') {
-                        data.folders = data.folders.filter(function(f) { return f.id !== item.folderId; });
-                        expandedFolders = expandedFolders.filter(function(id) { return id !== item.folderId; });
-                    }
-                    pasted++;
-                } else if (item.type === 'file') {
-                    var srcFolder = findFolder(item.folderId);
-                    if (!srcFolder) continue;
-                    var srcFile = srcFolder.files.find(function(f) { return f.id === item.fileId; });
-                    if (!srcFile) continue;
-                    target.files.push({
-                        id: generateId(),
-                        name: srcFile.name + (clipboard.action === 'copy' ? ' (copy)' : ''),
-                        data: srcFile.data,
-                        size: srcFile.size,
-                        type: srcFile.type,
-                        date: Date.now()
-                    });
-                    if (clipboard.action === 'cut') {
-                        srcFolder.files = srcFolder.files.filter(function(f) { return f.id !== item.fileId; });
-                    }
-                    pasted++;
-                }
-            }
-            if (clipboard.action === 'cut') {
-                clipboard = { items: [], action: null };
-            }
-            render();
-            showToast('✅ ' + pasted + ' item dipaste ke "' + target.name + '"');
-        }
-
-        // ============================================
-        //  CONTEXT MENU
-        // ============================================
-        function showContextMenu(e, type, folderId, fileId) {
-            e.preventDefault();
-            contextTarget = { type: type, folderId: folderId, fileId: fileId };
-            var menu = document.getElementById('contextMenu');
-            menu.style.left = Math.min(e.clientX, window.innerWidth - 180) + 'px';
-            menu.style.top = Math.min(e.clientY, window.innerHeight - 200) + 'px';
-            menu.classList.add('active');
-        }
-
-        function contextAction(action) {
-            if (!contextTarget) return;
-            var type = contextTarget.type;
-            var folderId = contextTarget.folderId;
-            var fileId = contextTarget.fileId;
-            if (action === 'rename') {
-                if (type === 'folder') renameFolder(folderId);
-                else renameFile(folderId, fileId);
-            } else if (action === 'cut') {
-                cutItem(type, folderId, fileId);
-            } else if (action === 'copy') {
-                copyItem(type, folderId, fileId);
-            } else if (action === 'paste') {
-                pasteItem(folderId);
-            } else if (action === 'delete') {
-                if (type === 'folder') deleteFolder(folderId);
-                else deleteFile(folderId, fileId);
-            }
-            closeContextMenu();
-        }
-
-        function closeContextMenu() {
-            document.getElementById('contextMenu').classList.remove('active');
-        }
-
-        // ============================================
-        //  FILTER & VIEW
-        // ============================================
         function switchView(view) {
             currentView = view;
             var items = document.querySelectorAll('.sidebar .menu-item');
             for (var i = 0; i < items.length; i++) {
                 items[i].classList.remove('active');
-                var text = items[i].textContent.trim().toLowerCase();
-                if (view === 'all' && text.indexOf('semua') !== -1) {
-                    items[i].classList.add('active');
-                } else if (view === 'images' && text.indexOf('foto') !== -1) {
-                    items[i].classList.add('active');
-                } else if (view === 'docs' && text.indexOf('dokumen') !== -1) {
-                    items[i].classList.add('active');
-                }
             }
             var titles = { all: '📂 Semua Folder', images: '🖼️ Foto', docs: '📄 Dokumen' };
             document.getElementById('pageTitle').textContent = titles[view] || '📂 Semua Folder';
@@ -943,9 +741,6 @@
             render();
         }
 
-        // ============================================
-        //  THEME
-        // ============================================
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             var label = document.getElementById('themeLabel');
@@ -956,25 +751,6 @@
             localStorage.setItem('gitpo_theme', isDark ? 'dark' : 'light');
         }
 
-        // ============================================
-        //  DRAG & DROP
-        // ============================================
-        function handleDrop(e) {
-            e.preventDefault();
-            document.getElementById('uploadBox').classList.remove('dragover');
-            var files = e.dataTransfer.files;
-            if (files.length === 0) return;
-            var root = findFolder('root');
-            if (!root) {
-                showToast('Root tidak ditemukan!', 'error');
-                return;
-            }
-            uploadFilesToFolder('root', files);
-        }
-
-        // ============================================
-        //  INIT
-        // ============================================
         if (localStorage.getItem('gitpo_theme') === 'dark') {
             document.body.classList.add('dark-mode');
             document.getElementById('themeLabel').textContent = 'Light';
@@ -988,15 +764,10 @@
             this.value = '';
         });
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.context-menu')) closeContextMenu();
-        });
-
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeLightbox();
                 closeNewFolderModal();
-                closeContextMenu();
             }
             if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
                 e.preventDefault();
@@ -1016,11 +787,14 @@
         uploadBox.addEventListener('drop', function(e) {
             e.preventDefault();
             this.classList.remove('dragover');
-            handleDrop(e);
+            var files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadFilesToFolder('root', files);
+            }
         });
 
         render();
-        console.log('✅ gitpo v6 - File Manager siap!');
+        console.log('gitpo v7.1 ready');
     </script>
 </body>
 </html>
