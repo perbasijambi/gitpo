@@ -221,6 +221,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: all 0.3s;
             position: relative;
+            cursor: pointer;
         }
         .gallery-item:hover {
             transform: translateY(-4px);
@@ -289,6 +290,58 @@
             font-size: 3rem;
         }
 
+        /* ===== LIGHTBOX ===== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lightbox.active {
+            display: flex;
+        }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 40px rgba(0,0,0,0.5);
+        }
+        .lightbox .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+        }
+        .lightbox .close-lightbox:hover {
+            transform: scale(1.2);
+            color: #fc8181;
+        }
+        .lightbox .lightbox-info {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
+
         /* ===== STATS ===== */
         .stats {
             display: flex;
@@ -339,6 +392,15 @@
             .tab-btn {
                 text-align: center;
             }
+            .lightbox img {
+                max-width: 95%;
+                max-height: 80%;
+            }
+            .lightbox .close-lightbox {
+                top: 10px;
+                right: 15px;
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -346,7 +408,7 @@
     <div class="container">
         <!-- HEADER -->
         <header>
-            <h1>📸 gitpo <span>v2.0</span></h1>
+            <h1>📸 gitpo <span>v2.1</span></h1>
             <p>Upload foto dan file, simpan di galeri!</p>
         </header>
 
@@ -428,9 +490,18 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- LIGHTBOX -->
+    <!-- ========================================== -->
+    <div class="lightbox" id="lightbox">
+        <button class="close-lightbox" onclick="closeLightbox()">✕</button>
+        <img id="lightboxImage" src="" alt="Preview">
+        <div class="lightbox-info" id="lightboxInfo">Foto</div>
+    </div>
+
     <script>
         // ============================================
-        // GITPO v2.0 - PHOTO & FILE UPLOAD
+        // GITPO v2.1 - PHOTO & FILE UPLOAD
         // ============================================
 
         // ===== STATE =====
@@ -450,6 +521,33 @@
         const fileGalleryEl = document.getElementById('fileGallery');
         const photoCount = document.getElementById('photoCount');
         const fileCount = document.getElementById('fileCount');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxInfo = document.getElementById('lightboxInfo');
+
+        // ============================================
+        //  LIGHTBOX FUNCTIONS
+        // ============================================
+
+        function openLightbox(src, name) {
+            lightboxImage.src = src;
+            lightboxInfo.textContent = name || 'Foto';
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
+        });
 
         // ============================================
         //  PHOTO SECTION
@@ -468,7 +566,7 @@
             }
             photoGalleryEl.innerHTML = photoGallery.map((item, index) => `
                 <div class="gallery-item">
-                    <img src="${item.data}" alt="${item.name}">
+                    <img src="${item.data}" alt="${item.name}" onclick="openLightbox('${item.data}', '${item.name}')">
                     <div class="file-info">
                         <div class="name">${item.name}</div>
                         <div class="size">${(item.size / 1024).toFixed(0)} KB</div>
@@ -516,7 +614,7 @@
             previewPhoto.classList.add('active');
             previewListPhoto.innerHTML = pendingPhotos.map((file, i) => `
                 <div class="preview-item">
-                    <img src="${file.data}" alt="${file.name}">
+                    <img src="${file.data}" alt="${file.name}" onclick="openLightbox('${file.data}', '${file.name}')">
                     <button class="remove-btn" onclick="removePhotoPending(${i})">✕</button>
                 </div>
             `).join('');
