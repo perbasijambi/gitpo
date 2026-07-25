@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📁 gitpo - File Manager</title>
     <style>
-        /* ============================================
-           RESET & VARIABLES
-           ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -22,13 +19,11 @@
             --text-light: #a0aec0;
             --border-color: #e2e8f0;
             --primary: #667eea;
-            --primary-hover: #5a67d8;
             --success: #48bb78;
             --danger: #fc8181;
             --warning: #ecc94b;
             --radius: 8px;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --transition: all 0.3s ease;
         }
         body.dark-mode {
             --bg-body: #1a202c;
@@ -42,21 +37,12 @@
             font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-body);
             color: var(--text-dark);
-            transition: var(--transition);
+            transition: all 0.2s;
             min-height: 100vh;
         }
-
-        /* ============================================
-           LAYOUT
-           ============================================ */
-        .app {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* ===== SIDEBAR ===== */
+        .app { display: flex; min-height: 100vh; }
         .sidebar {
-            width: 240px;
+            width: 220px;
             background: var(--bg-sidebar);
             color: white;
             padding: 20px 16px;
@@ -66,135 +52,58 @@
             height: 100vh;
             overflow-y: auto;
         }
-        .sidebar .logo {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .sidebar .logo span {
-            background: var(--primary);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.6rem;
-        }
-        .sidebar .menu-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.4);
-            letter-spacing: 1px;
-            margin: 20px 0 8px 0;
-        }
+        .sidebar .logo { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .sidebar .logo span { background: var(--primary); padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; }
+        .sidebar .menu-label { font-size: 0.65rem; text-transform: uppercase; color: rgba(255,255,255,0.4); letter-spacing: 1px; margin: 15px 0 8px 0; }
         .sidebar .menu-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
+            gap: 10px;
+            padding: 8px 12px;
             border-radius: var(--radius);
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
             color: rgba(255,255,255,0.7);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-        .sidebar .menu-item:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-        .sidebar .menu-item.active {
-            background: var(--primary);
-            color: white;
-        }
-        .sidebar .menu-item .icon {
-            font-size: 1.2rem;
-        }
-        .sidebar .menu-item .badge {
-            margin-left: auto;
-            background: var(--danger);
-            color: white;
-            font-size: 0.6rem;
-            padding: 2px 8px;
-            border-radius: 50px;
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .main {
-            flex: 1;
-            padding: 20px 30px;
-            min-width: 0;
-        }
-
-        /* ===== HEADER MAIN ===== */
+        .sidebar .menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .sidebar .menu-item.active { background: var(--primary); color: white; }
+        .sidebar .menu-item .badge { margin-left: auto; background: var(--danger); color: white; font-size: 0.6rem; padding: 1px 8px; border-radius: 50px; }
+        .main { flex: 1; padding: 20px 30px; min-width: 0; }
         .main-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        .main-header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        .main-header .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .main-header h1 { font-size: 1.5rem; font-weight: 700; }
         .btn {
-            padding: 8px 20px;
+            padding: 8px 18px;
             border: none;
             border-radius: var(--radius);
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
             font-size: 0.85rem;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        .btn-success:hover {
-            opacity: 0.8;
-        }
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        .btn-danger:hover {
-            opacity: 0.8;
-        }
-        .btn-sm {
-            padding: 4px 12px;
-            font-size: 0.75rem;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-gray);
-        }
-        .btn-outline:hover {
-            background: var(--bg-body);
-        }
-
-        /* ===== TOOLBAR ===== */
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.8; transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { opacity: 0.8; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { opacity: 0.8; }
+        .btn-sm { padding: 4px 12px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-gray); }
+        .btn-outline:hover { background: var(--bg-body); }
         .toolbar {
             background: var(--bg-card);
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             display: flex;
@@ -205,164 +114,89 @@
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
         }
-        .toolbar .info {
-            font-size: 0.85rem;
-            color: var(--text-gray);
-        }
-        .toolbar .info span {
-            font-weight: 700;
-            color: var(--primary);
-        }
+        .toolbar .info { font-size: 0.8rem; color: var(--text-gray); }
+        .toolbar .info span { font-weight: 700; color: var(--primary); }
         .toolbar .search input {
-            padding: 6px 12px;
+            padding: 5px 12px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
             background: var(--bg-body);
             color: var(--text-dark);
-            font-size: 0.85rem;
-            width: 200px;
+            font-size: 0.8rem;
+            width: 180px;
         }
-        .toolbar .search input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        /* ===== UPLOAD BOX ===== */
+        .toolbar .search input:focus { outline: none; border-color: var(--primary); }
         .upload-box {
             background: var(--bg-card);
             border: 2px dashed var(--border-color);
             border-radius: var(--radius);
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             margin-bottom: 20px;
-            transition: var(--transition);
+            transition: all 0.3s;
             cursor: pointer;
         }
-        .upload-box:hover {
-            border-color: var(--primary);
-            background: var(--bg-body);
-        }
-        .upload-box .icon {
-            font-size: 2.5rem;
-        }
-        .upload-box input[type="file"] {
-            display: none;
-        }
-        .upload-box label {
-            cursor: pointer;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        .upload-box .hint {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            margin-top: 5px;
-        }
-
-        /* ===== TABLE / FILE LIST ===== */
-        .file-table-wrap {
+        .upload-box:hover { border-color: var(--primary); background: var(--bg-body); }
+        .upload-box input[type="file"] { display: none; }
+        .upload-box label { cursor: pointer; color: var(--primary); font-weight: 600; }
+        .upload-box .hint { font-size: 0.75rem; color: var(--text-light); margin-top: 3px; }
+        .upload-box.dragover { border-color: var(--success); background: rgba(72,187,120,0.1); }
+        .folder-tree {
             background: var(--bg-card);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            overflow: hidden;
             border: 1px solid var(--border-color);
+            overflow: hidden;
+            min-height: 200px;
         }
-        .file-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .file-table th {
-            text-align: left;
-            padding: 12px 16px;
-            background: var(--bg-body);
-            color: var(--text-gray);
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .file-table td {
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            vertical-align: middle;
-        }
-        .file-table tr:hover {
-            background: var(--bg-body);
-        }
-        .file-table .file-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-        .file-table .file-name {
+        .folder-item { border-bottom: 1px solid var(--border-color); }
+        .folder-item:last-child { border-bottom: none; }
+        .folder-header {
             display: flex;
             align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
             gap: 8px;
-            font-weight: 500;
+            user-select: none;
         }
-        .file-table .file-name .ext {
-            font-size: 0.6rem;
-            background: var(--bg-body);
-            padding: 2px 8px;
-            border-radius: 4px;
-            color: var(--text-light);
-        }
-        .file-table .file-size {
-            color: var(--text-light);
-            font-size: 0.8rem;
-        }
-        .file-table .file-date {
-            color: var(--text-light);
-            font-size: 0.8rem;
-        }
-        .file-table .file-actions {
+        .folder-header:hover { background: var(--bg-body); }
+        .folder-header .arrow { transition: transform 0.2s; font-size: 0.7rem; color: var(--text-light); width: 16px; text-align: center; }
+        .folder-header .arrow.open { transform: rotate(90deg); }
+        .folder-header .folder-icon { font-size: 1.2rem; }
+        .folder-header .folder-name { font-weight: 600; font-size: 0.95rem; flex: 1; }
+        .folder-header .folder-actions { display: flex; gap: 4px; }
+        .folder-header .folder-count { font-size: 0.7rem; color: var(--text-light); margin-right: 8px; }
+        .folder-content { display: none; padding: 0 16px 10px 36px; background: var(--bg-body); }
+        .folder-content.open { display: block; }
+        .file-item {
             display: flex;
-            gap: 5px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            gap: 10px;
             flex-wrap: wrap;
         }
-        .file-table .file-actions .btn-sm {
-            padding: 3px 10px;
-            font-size: 0.7rem;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        .btn-sm.download {
-            background: var(--primary);
-            color: white;
-        }
-        .btn-sm.download:hover {
-            background: var(--primary-hover);
-        }
-        .btn-sm.delete {
-            background: var(--danger);
-            color: white;
-        }
-        .btn-sm.delete:hover {
-            opacity: 0.8;
-        }
-        .btn-sm.view {
-            background: var(--success);
-            color: white;
-        }
-        .btn-sm.view:hover {
-            opacity: 0.8;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
-        }
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-
-        /* ===== LIGHTBOX ===== */
+        .file-item:hover { background: var(--bg-card); }
+        .file-item .file-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+        .file-item .file-left .icon { font-size: 1rem; }
+        .file-item .file-left .name { font-size: 0.85rem; word-break: break-all; }
+        .file-item .file-left .ext { font-size: 0.6rem; background: var(--border-color); padding: 1px 6px; border-radius: 4px; color: var(--text-light); }
+        .file-item .file-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .file-item .file-right .size { font-size: 0.7rem; color: var(--text-light); }
+        .file-item .file-right .btn-sm { padding: 2px 8px; font-size: 0.6rem; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-sm.download { background: var(--primary); color: white; }
+        .btn-sm.download:hover { opacity: 0.8; }
+        .btn-sm.delete { background: var(--danger); color: white; }
+        .btn-sm.delete:hover { opacity: 0.8; }
+        .btn-sm.view { background: var(--success); color: white; }
+        .btn-sm.view:hover { opacity: 0.8; }
+        .btn-sm.rename { background: var(--warning); color: #333; }
+        .btn-sm.rename:hover { opacity: 0.8; }
+        .empty-state { text-align: center; padding: 30px; color: var(--text-light); }
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
         .lightbox {
             display: none;
             position: fixed;
@@ -373,15 +207,8 @@
             justify-content: center;
             padding: 20px;
         }
-        .lightbox.active {
-            display: flex;
-        }
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border-radius: 8px;
-        }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; }
         .lightbox .close-lightbox {
             position: absolute;
             top: 20px;
@@ -391,392 +218,549 @@
             cursor: pointer;
             background: none;
             border: none;
-            transition: var(--transition);
+            transition: all 0.3s;
         }
-        .lightbox .close-lightbox:hover {
-            transform: scale(1.2);
-            color: var(--danger);
-        }
+        .lightbox .close-lightbox:hover { transform: scale(1.2); color: var(--danger); }
         .lightbox .lightbox-info {
             position: absolute;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             color: rgba(255,255,255,0.7);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             background: rgba(0,0,0,0.5);
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 50px;
         }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .app {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 12px 16px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .sidebar .logo {
-                margin-bottom: 0;
-                width: 100%;
-            }
-            .sidebar .menu-label {
-                display: none;
-            }
-            .sidebar .menu-item {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-            .main {
-                padding: 15px;
-            }
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .toolbar .search input {
-                width: 100%;
-            }
-            .file-table {
-                font-size: 0.8rem;
-            }
-            .file-table th,
-            .file-table td {
-                padding: 8px 10px;
-            }
-            .file-table .file-actions {
-                flex-direction: column;
-                gap: 3px;
-            }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-card);
+            color: var(--text-dark);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            z-index: 10000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            max-width: 400px;
         }
-        @media (max-width: 600px) {
-            .main-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .main-header .actions {
-                justify-content: stretch;
-            }
-            .main-header .actions .btn {
-                flex: 1;
-                justify-content: center;
-            }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
         }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        ::-webkit-scrollbar-track {
+        .modal-box h3 { margin-bottom: 10px; }
+        .modal-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
             background: var(--bg-body);
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
+        .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .context-menu {
+            display: none;
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 6px 0;
+            z-index: 10001;
+            min-width: 160px;
         }
+        .context-menu.active { display: block; }
+        .context-menu .menu-item {
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .context-menu .menu-item:hover { background: var(--bg-body); }
+        .context-menu .menu-item.danger { color: var(--danger); }
+        .context-menu .divider { height: 1px; background: var(--border-color); margin: 4px 12px; }
+        @media (max-width: 768px) {
+            .app { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 4px; }
+            .sidebar .logo { margin-bottom: 0; width: 100%; }
+            .sidebar .menu-label { display: none; }
+            .sidebar .menu-item { padding: 5px 10px; font-size: 0.75rem; }
+            .main { padding: 15px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar .search input { width: 100%; }
+            .folder-content { padding-left: 16px; }
+            .file-item { flex-direction: column; align-items: stretch; gap: 4px; }
+            .file-item .file-right { justify-content: flex-start; }
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
     </style>
 </head>
 <body>
     <div class="app">
-        <!-- ===== SIDEBAR ===== -->
+        <!-- SIDEBAR -->
         <aside class="sidebar">
-            <div class="logo">
-                📁 gitpo
-                <span>v3</span>
-            </div>
+            <div class="logo">📁 gitpo <span>v6</span></div>
             <div class="menu-label">Menu</div>
-            <a class="menu-item active" onclick="switchTab('all')">
-                <span class="icon">📂</span> Semua File
+            <a class="menu-item active" onclick="switchView('all')">
+                <span>📂</span> Semua Folder
                 <span class="badge" id="totalBadge">0</span>
             </a>
-            <a class="menu-item" onclick="switchTab('image')">
-                <span class="icon">🖼️</span> Foto
+            <a class="menu-item" onclick="switchView('images')">
+                <span>🖼️</span> Foto
             </a>
-            <a class="menu-item" onclick="switchTab('document')">
-                <span class="icon">📄</span> Dokumen
-            </a>
-            <a class="menu-item" onclick="switchTab('archive')">
-                <span class="icon">📦</span> Arsip
+            <a class="menu-item" onclick="switchView('docs')">
+                <span>📄</span> Dokumen
             </a>
             <a class="menu-item" onclick="toggleTheme()">
-                <span class="icon">🌙</span> <span id="themeLabel">Dark Mode</span>
+                <span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span>
             </a>
         </aside>
 
-        <!-- ===== MAIN CONTENT ===== -->
+        <!-- MAIN -->
         <main class="main">
-            <!-- HEADER -->
             <div class="main-header">
-                <h1 id="pageTitle">📂 Semua File</h1>
-                <div class="actions">
-                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📤 Upload File</button>
+                <h1 id="pageTitle">📂 Semua Folder</h1>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="showNewFolderModal()">📁 Buat Folder</button>
+                    <button class="btn btn-success" onclick="triggerUpload()">📤 Upload</button>
                     <button class="btn btn-outline" onclick="clearAll()">🗑️ Kosongkan</button>
                 </div>
-                <input type="file" id="fileInput" multiple style="display:none" onchange="handleFiles(this.files)">
+                <input type="file" id="fileInput" multiple style="display:none">
             </div>
 
-            <!-- TOOLBAR -->
             <div class="toolbar">
                 <div class="info">
-                    📁 <span id="fileCount">0</span> file • 
+                    📁 <span id="folderCount">0</span> folder •
+                    📄 <span id="fileCount">0</span> file •
                     💾 <span id="totalSize">0 KB</span>
                 </div>
-                <div class="search">
-                    <input type="text" id="searchInput" placeholder="🔍 Cari file..." oninput="filterFiles()">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <div class="search">
+                        <input type="text" id="searchInput" placeholder="🔍 Cari..." oninput="filterItems()">
+                    </div>
                 </div>
             </div>
 
-            <!-- UPLOAD BOX (Drag & Drop) -->
-            <div class="upload-box" id="uploadBox" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
-                <div class="icon">📤</div>
-                <p>
-                    <label for="fileInput">Klik untuk upload</label>
-                    atau drag & drop file di sini
-                </p>
+            <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+                <p>📤 <label>Klik untuk upload</label> atau drag & drop file ke sini</p>
                 <div class="hint">Support semua jenis file | Maks 10MB</div>
             </div>
 
-            <!-- FILE TABLE -->
-            <div class="file-table-wrap">
-                <table class="file-table">
-                    <thead>
-                        <tr>
-                            <th style="width:45%">Nama File</th>
-                            <th style="width:15%">Ukuran</th>
-                            <th style="width:20%">Tanggal</th>
-                            <th style="width:20%">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fileTableBody">
-                        <tr>
-                            <td colspan="4">
-                                <div class="empty-state">
-                                    <div class="icon">📁</div>
-                                    <p>Belum ada file. Upload file pertama!</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="folder-tree" id="folderTree"></div>
         </main>
     </div>
 
-    <!-- ===== LIGHTBOX ===== -->
+    <!-- CONTEXT MENU -->
+    <div class="context-menu" id="contextMenu">
+        <div class="menu-item" onclick="contextAction('rename')">✏️ Rename</div>
+        <div class="menu-item" onclick="contextAction('cut')">✂️ Cut</div>
+        <div class="menu-item" onclick="contextAction('copy')">📋 Copy</div>
+        <div class="menu-item" onclick="contextAction('paste')">📥 Paste</div>
+        <div class="divider"></div>
+        <div class="menu-item danger" onclick="contextAction('delete')">🗑️ Delete</div>
+    </div>
+
+    <!-- LIGHTBOX -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <button class="close-lightbox" onclick="closeLightbox()">✕</button>
         <img id="lightboxImage" src="" alt="Preview">
-        <div class="lightbox-info" id="lightboxInfo">Foto</div>
+        <div class="lightbox-info" id="lightboxInfo"></div>
     </div>
+
+    <!-- NEW FOLDER MODAL -->
+    <div class="modal-overlay" id="newFolderModal" onclick="closeNewFolderModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h3>📁 Buat Folder Baru</h3>
+            <input type="text" id="newFolderName" placeholder="Nama folder..." onkeydown="if(event.key==='Enter') createFolder()">
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeNewFolderModal()">Batal</button>
+                <button class="btn btn-primary" onclick="createFolder()">Buat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
 
     <script>
         // ============================================
-        //  STATE
+        //  DATA & STATE
         // ============================================
-        let files = JSON.parse(localStorage.getItem('gitpo_files_v3')) || [];
-        let currentTab = 'all';
+        let data = JSON.parse(localStorage.getItem('gitpo_folders_v6')) || {
+            folders: [{ id: 'root', name: 'Root', parent: null, files: [] }]
+        };
+        let currentView = 'all';
         let searchQuery = '';
+        let expandedFolders = JSON.parse(localStorage.getItem('gitpo_expanded_v6')) || ['root'];
+        let clipboard = { items: [], action: null };
+        let contextTarget = null;
 
         // ============================================
-        //  DOM REFS
+        //  HELPERS
         // ============================================
-        const tbody = document.getElementById('fileTableBody');
-        const fileCount = document.getElementById('fileCount');
-        const totalSize = document.getElementById('totalSize');
-        const totalBadge = document.getElementById('totalBadge');
-        const pageTitle = document.getElementById('pageTitle');
-        const fileInput = document.getElementById('fileInput');
+        function generateId() {
+            return Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        }
 
-        // ============================================
-        //  FORMAT HELPERS
-        // ============================================
+        function findFolder(id) {
+            return data.folders.find(f => f.id === id);
+        }
+
+        function getChildFolders(parentId) {
+            return data.folders.filter(f => f.parent === parentId);
+        }
+
+        function getFolderFiles(folderId) {
+            const folder = findFolder(folderId);
+            return folder ? folder.files || [] : [];
+        }
+
+        function getTotalFiles() {
+            let total = 0;
+            for (const f of data.folders) {
+                total += f.files ? f.files.length : 0;
+            }
+            return total;
+        }
+
+        function getTotalSize() {
+            let total = 0;
+            for (const f of data.folders) {
+                if (f.files) {
+                    for (const file of f.files) {
+                        total += file.size || 0;
+                    }
+                }
+            }
+            return total;
+        }
+
         function formatSize(bytes) {
             if (bytes < 1024) return bytes + ' B';
             if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
             return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
-        function formatDate(ts) {
-            const d = new Date(ts);
-            return d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
-        }
-
         function getFileIcon(name) {
             const ext = name.split('.').pop().toLowerCase();
-            const icons = {
-                // Images
+            const map = {
                 jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', webp: '🖼️', svg: '🖼️',
-                // Documents
                 pdf: '📄', doc: '📝', docx: '📝', txt: '📃', rtf: '📃',
-                // Spreadsheets
                 xls: '📊', xlsx: '📊', csv: '📊',
-                // Presentations
                 ppt: '📽️', pptx: '📽️',
-                // Archives
                 zip: '📦', rar: '📦', 7z: '📦', tar: '📦', gz: '📦',
-                // Audio/Video
                 mp3: '🎵', wav: '🎵', mp4: '🎬', avi: '🎬', mkv: '🎬',
-                // Code
                 html: '🌐', css: '🎨', js: '⚡', php: '🐘', py: '🐍', json: '📋',
-                // Others
                 exe: '⚙️', dmg: '💿', iso: '💿'
             };
-            return icons[ext] || '📎';
+            return map[ext] || '📎';
         }
 
         function getFileType(name) {
             const ext = name.split('.').pop().toLowerCase();
-            const imageExts = ['jpg','jpeg','png','gif','webp','svg','bmp','ico'];
-            const docExts = ['pdf','doc','docx','txt','rtf','odt'];
-            const archiveExts = ['zip','rar','7z','tar','gz','bz2'];
-            if (imageExts.includes(ext)) return 'image';
-            if (docExts.includes(ext)) return 'document';
-            if (archiveExts.includes(ext)) return 'archive';
+            const img = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'];
+            const doc = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'csv', 'ppt', 'pptx'];
+            if (img.includes(ext)) return 'image';
+            if (doc.includes(ext)) return 'document';
             return 'other';
         }
 
+        function showToast(message, type) {
+            type = type || 'success';
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
         // ============================================
-        //  RENDER
+        //  SAVE & RENDER
         // ============================================
+        function saveData() {
+            localStorage.setItem('gitpo_folders_v6', JSON.stringify(data));
+            localStorage.setItem('gitpo_expanded_v6', JSON.stringify(expandedFolders));
+        }
+
         function render() {
-            let filtered = [...files];
+            var root = findFolder('root');
+            if (!root) {
+                data.folders = [{ id: 'root', name: 'Root', parent: null, files: [] }];
+            }
+            saveData();
 
-            // Filter by tab
-            if (currentTab === 'image') filtered = filtered.filter(f => getFileType(f.name) === 'image');
-            else if (currentTab === 'document') filtered = filtered.filter(f => getFileType(f.name) === 'document');
-            else if (currentTab === 'archive') filtered = filtered.filter(f => getFileType(f.name) === 'archive');
+            var html = renderFolder('root', 0);
+            document.getElementById('folderTree').innerHTML = html;
 
-            // Search
-            if (searchQuery.trim()) {
-                const q = searchQuery.toLowerCase().trim();
-                filtered = filtered.filter(f => f.name.toLowerCase().includes(q));
+            var totalFiles = getTotalFiles();
+            document.getElementById('folderCount').textContent = data.folders.length - 1;
+            document.getElementById('fileCount').textContent = totalFiles;
+            document.getElementById('totalSize').textContent = formatSize(getTotalSize());
+            document.getElementById('totalBadge').textContent = totalFiles;
+
+            if (searchQuery.trim()) filterItems();
+        }
+
+        function renderFolder(folderId, depth) {
+            var folder = findFolder(folderId);
+            if (!folder) return '';
+
+            var isExpanded = expandedFolders.indexOf(folderId) !== -1;
+            var childFolders = getChildFolders(folderId);
+            var files = getFolderFiles(folderId);
+            var isRoot = folderId === 'root';
+
+            var filteredFiles = files;
+            if (currentView === 'images') {
+                filteredFiles = files.filter(function(f) { return getFileType(f.name) === 'image'; });
+            } else if (currentView === 'docs') {
+                filteredFiles = files.filter(function(f) { return getFileType(f.name) === 'document'; });
             }
 
-            // Sort: newest first
-            filtered.sort((a, b) => b.date - a.date);
+            if (searchQuery.trim()) {
+                var q = searchQuery.toLowerCase().trim();
+                var nameMatch = folder.name.toLowerCase().indexOf(q) !== -1;
+                var fileMatch = files.some(function(f) { return f.name.toLowerCase().indexOf(q) !== -1; });
+                var childMatch = childFolders.some(function(f) { return f.name.toLowerCase().indexOf(q) !== -1; });
+                if (!nameMatch && !fileMatch && !childMatch) {
+                    var hasChildMatch = false;
+                    for (var i = 0; i < childFolders.length; i++) {
+                        if (renderFolder(childFolders[i].id, depth + 1)) hasChildMatch = true;
+                    }
+                    if (!hasChildMatch && !fileMatch) return '';
+                }
+            }
 
-            // Update badge
-            totalBadge.textContent = files.length;
+            var html = '<div class="folder-item">';
 
-            // Update counts
-            fileCount.textContent = filtered.length;
-            const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
-            totalSize.textContent = formatSize(totalBytes);
+            if (!isRoot) {
+                var total = files.length + childFolders.length;
+                html += '<div class="folder-header" onclick="toggleFolder(\'' + folderId + '\')">';
+                html += '<span class="arrow' + (isExpanded ? ' open' : '') + '">▶</span>';
+                html += '<span class="folder-icon">📁</span>';
+                html += '<span class="folder-name">' + folder.name + '</span>';
+                html += '<span class="folder-count">(' + total + ')</span>';
+                html += '<div class="folder-actions" onclick="event.stopPropagation();">';
+                html += '<button class="btn-sm" style="background:#48bb78;color:white;" onclick="uploadToFolder(\'' + folderId + '\')">📤</button>';
+                html += '<button class="btn-sm" style="background:#fc8181;color:white;" onclick="deleteFolder(\'' + folderId + '\')">🗑️</button>';
+                html += '</div></div>';
+            } else {
+                html += '<div class="folder-header" style="cursor:default;background:var(--bg-body);border-bottom:1px solid var(--border-color);">';
+                html += '<span style="font-weight:700;">📂 Semua Folder</span>';
+                html += '<span style="margin-left:8px;font-size:0.7rem;color:var(--text-light);">(' + (data.folders.length - 1) + ' folder, ' + getTotalFiles() + ' file)</span>';
+                html += '</div>';
+            }
 
-            // Update title
-            const tabNames = {
-                all: '📂 Semua File',
-                image: '🖼️ Foto',
-                document: '📄 Dokumen',
-                archive: '📦 Arsip'
-            };
-            pageTitle.textContent = tabNames[currentTab] || '📂 Semua File';
+            html += '<div class="folder-content' + (isExpanded || isRoot ? ' open' : '') + '">';
 
-            // Render table
-            if (filtered.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4">
-                            <div class="empty-state">
-                                <div class="icon">📁</div>
-                                <p>${files.length === 0 ? 'Belum ada file. Upload file pertama!' : 'Tidak ada file yang cocok.'}</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+            for (var j = 0; j < childFolders.length; j++) {
+                html += renderFolder(childFolders[j].id, depth + 1);
+            }
+
+            if (filteredFiles.length > 0) {
+                for (var k = 0; k < filteredFiles.length; k++) {
+                    var file = filteredFiles[k];
+                    var isImage = getFileType(file.name) === 'image';
+                    html += '<div class="file-item">';
+                    html += '<div class="file-left">';
+                    html += '<span class="icon">' + getFileIcon(file.name) + '</span>';
+                    html += '<span class="name">' + file.name + '</span>';
+                    html += '<span class="ext">' + file.name.split('.').pop().toUpperCase() + '</span>';
+                    html += '</div>';
+                    html += '<div class="file-right">';
+                    html += '<span class="size">' + formatSize(file.size) + '</span>';
+                    if (isImage) {
+                        html += '<button class="btn-sm view" onclick="viewFile(\'' + folderId + '\',\'' + file.id + '\')">👁️</button>';
+                    }
+                    html += '<button class="btn-sm rename" onclick="renameFile(\'' + folderId + '\',\'' + file.id + '\')">✏️</button>';
+                    html += '<button class="btn-sm download" onclick="downloadFile(\'' + folderId + '\',\'' + file.id + '\')">⬇️</button>';
+                    html += '<button class="btn-sm delete" onclick="deleteFile(\'' + folderId + '\',\'' + file.id + '\')">🗑️</button>';
+                    html += '</div></div>';
+                }
+            } else {
+                if (!searchQuery.trim() || (currentView === 'all' && childFolders.length === 0)) {
+                    html += '<div class="empty-state"><div class="icon">📭</div><p style="font-size:0.8rem;">Folder kosong</p></div>';
+                }
+            }
+
+            html += '</div></div>';
+            return html;
+        }
+
+        // ============================================
+        //  FOLDER OPERATIONS
+        // ============================================
+        function toggleFolder(id) {
+            var idx = expandedFolders.indexOf(id);
+            if (idx !== -1) {
+                expandedFolders.splice(idx, 1);
+            } else {
+                expandedFolders.push(id);
+            }
+            render();
+        }
+
+        function showNewFolderModal() {
+            document.getElementById('newFolderModal').classList.add('active');
+            document.getElementById('newFolderName').value = '';
+            document.getElementById('newFolderName').focus();
+        }
+
+        function closeNewFolderModal() {
+            document.getElementById('newFolderModal').classList.remove('active');
+        }
+
+        function createFolder() {
+            var name = document.getElementById('newFolderName').value.trim();
+            if (!name) {
+                showToast('Masukkan nama folder!', 'error');
                 return;
             }
+            data.folders.push({ id: generateId(), name: name, parent: 'root', files: [] });
+            expandedFolders.push('root');
+            render();
+            closeNewFolderModal();
+            showToast('📁 Folder "' + name + '" berhasil dibuat!');
+        }
 
-            tbody.innerHTML = filtered.map((file, index) => {
-                const isImage = getFileType(file.name) === 'image';
-                return `
-                    <tr>
-                        <td>
-                            <div class="file-name">
-                                <span class="file-icon">${getFileIcon(file.name)}</span>
-                                ${file.name}
-                                <span class="ext">${file.name.split('.').pop().toUpperCase()}</span>
-                            </div>
-                        </td>
-                        <td class="file-size">${formatSize(file.size)}</td>
-                        <td class="file-date">${formatDate(file.date)}</td>
-                        <td>
-                            <div class="file-actions">
-                                ${isImage ? `<button class="btn-sm view" onclick="viewFile('${file.id}')">👁️ Lihat</button>` : ''}
-                                <button class="btn-sm download" onclick="downloadFile('${file.id}')">⬇️</button>
-                                <button class="btn-sm delete" onclick="deleteFile('${file.id}')">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+        function deleteFolder(id) {
+            if (id === 'root') {
+                showToast('Tidak bisa menghapus Root!', 'error');
+                return;
+            }
+            var folder = findFolder(id);
+            if (!folder) return;
+            if (!confirm('Hapus folder "' + folder.name + '" dan semua isinya?')) return;
+            var toDelete = [id];
+            var children = data.folders.filter(function(f) { return f.parent === id; });
+            for (var i = 0; i < children.length; i++) {
+                toDelete.push(children[i].id);
+            }
+            data.folders = data.folders.filter(function(f) { return toDelete.indexOf(f.id) === -1; });
+            expandedFolders = expandedFolders.filter(function(f) { return toDelete.indexOf(f) === -1; });
+            render();
+            showToast('🗑️ Folder "' + folder.name + '" dihapus!');
+        }
+
+        function renameFolder(id) {
+            var folder = findFolder(id);
+            if (!folder) return;
+            var newName = prompt('Nama folder baru:', folder.name);
+            if (newName && newName.trim()) {
+                folder.name = newName.trim();
+                render();
+                showToast('✏️ Folder diubah menjadi "' + newName.trim() + '"');
+            }
+        }
+
+        // ============================================
+        //  UPLOAD FUNCTIONS
+        // ============================================
+        function triggerUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function uploadFilesToFolder(folderId, fileList) {
+            var folder = findFolder(folderId);
+            if (!folder) {
+                showToast('Folder tidak ditemukan!', 'error');
+                return;
+            }
+            var count = 0;
+            var total = fileList.length;
+            for (var i = 0; i < total; i++) {
+                var file = fileList[i];
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast('⚠️ ' + file.name + ' terlalu besar. Maks 10MB.', 'error');
+                    continue;
+                }
+                var reader = new FileReader();
+                reader.onload = function(e, f) {
+                    return function(e) {
+                        folder.files.push({
+                            id: generateId(),
+                            name: f.name,
+                            data: e.target.result,
+                            size: f.size,
+                            type: f.type,
+                            date: Date.now()
+                        });
+                        count++;
+                        if (count === total) {
+                            render();
+                            showToast('✅ ' + count + ' file berhasil diupload ke "' + folder.name + '"');
+                        }
+                    };
+                }(reader, file);
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function uploadToFolder(folderId) {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.onchange = function() {
+                if (this.files.length > 0) {
+                    uploadFilesToFolder(folderId, this.files);
+                }
+                this.value = '';
+            };
+            input.click();
         }
 
         // ============================================
         //  FILE OPERATIONS
         // ============================================
-        function addFiles(fileList) {
-            const maxSize = 10 * 1024 * 1024;
-            let added = 0;
-            for (const file of fileList) {
-                if (file.size > maxSize) {
-                    alert(`⚠️ ${file.name} terlalu besar. Maks 10MB.`);
-                    continue;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    files.push({
-                        id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                        name: file.name,
-                        data: e.target.result,
-                        size: file.size,
-                        type: file.type,
-                        date: Date.now()
-                    });
-                    added++;
-                    if (added === fileList.length || added === 1) {
-                        localStorage.setItem('gitpo_files_v3', JSON.stringify(files));
-                        render();
-                        if (added === fileList.length) {
-                            alert(`✅ ${added} file berhasil diupload!`);
-                        }
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleFiles(fileList) {
-            if (fileList.length === 0) return;
-            addFiles(fileList);
-            fileInput.value = '';
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            if (e.dataTransfer.files.length > 0) {
-                addFiles(e.dataTransfer.files);
-            }
-        }
-
-        function deleteFile(id) {
-            if (!confirm('Yakin ingin menghapus file ini?')) return;
-            files = files.filter(f => f.id !== id);
-            localStorage.setItem('gitpo_files_v3', JSON.stringify(files));
+        function deleteFile(folderId, fileId) {
+            if (!confirm('Hapus file ini?')) return;
+            var folder = findFolder(folderId);
+            if (!folder) return;
+            var file = folder.files.find(function(f) { return f.id === fileId; });
+            folder.files = folder.files.filter(function(f) { return f.id !== fileId; });
             render();
+            showToast('🗑️ File "' + (file ? file.name : '') + '" dihapus!');
         }
 
-        function downloadFile(id) {
-            const file = files.find(f => f.id === id);
+        function downloadFile(folderId, fileId) {
+            var folder = findFolder(folderId);
+            if (!folder) return;
+            var file = folder.files.find(function(f) { return f.id === fileId; });
             if (!file) return;
-            const a = document.createElement('a');
+            var a = document.createElement('a');
             a.href = file.data;
             a.download = file.name;
             document.body.appendChild(a);
@@ -784,12 +768,14 @@
             document.body.removeChild(a);
         }
 
-        function viewFile(id) {
-            const file = files.find(f => f.id === id);
+        function viewFile(folderId, fileId) {
+            var folder = findFolder(folderId);
+            if (!folder) return;
+            var file = folder.files.find(function(f) { return f.id === fileId; });
             if (!file) return;
-            const lightbox = document.getElementById('lightbox');
-            const img = document.getElementById('lightboxImage');
-            const info = document.getElementById('lightboxInfo');
+            var lightbox = document.getElementById('lightbox');
+            var img = document.getElementById('lightboxImage');
+            var info = document.getElementById('lightboxInfo');
             img.src = file.data;
             info.textContent = file.name + ' • ' + formatSize(file.size);
             lightbox.classList.add('active');
@@ -801,33 +787,159 @@
             document.body.style.overflow = '';
         }
 
+        function renameFile(folderId, fileId) {
+            var folder = findFolder(folderId);
+            if (!folder) return;
+            var file = folder.files.find(function(f) { return f.id === fileId; });
+            if (!file) return;
+            var newName = prompt('Nama file baru:', file.name);
+            if (newName && newName.trim()) {
+                file.name = newName.trim();
+                render();
+                showToast('✏️ File diubah menjadi "' + newName.trim() + '"');
+            }
+        }
+
         function clearAll() {
-            if (files.length === 0) return;
-            if (!confirm('Yakin ingin menghapus SEMUA file?')) return;
-            files = [];
-            localStorage.setItem('gitpo_files_v3', JSON.stringify(files));
+            if (!confirm('Hapus SEMUA folder dan file?')) return;
+            data.folders = [{ id: 'root', name: 'Root', parent: null, files: [] }];
+            expandedFolders = ['root'];
+            clipboard = { items: [], action: null };
             render();
+            showToast('🗑️ Semua data dihapus!');
         }
 
         // ============================================
-        //  FILTER & SEARCH
+        //  CLIPBOARD
         // ============================================
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.sidebar .menu-item').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.sidebar .menu-item').forEach(el => {
-                if (el.textContent.trim().toLowerCase().includes(
-                    tab === 'all' ? 'semua' :
-                    tab === 'image' ? 'foto' :
-                    tab === 'document' ? 'dokumen' : 'arsip'
-                )) {
-                    el.classList.add('active');
+        function cutItem(type, folderId, fileId) {
+            clipboard.action = 'cut';
+            clipboard.items = [{ type: type, folderId: folderId, fileId: fileId }];
+            render();
+            showToast('✂️ Dipotong: ' + (type === 'folder' ? 'folder' : 'file'));
+        }
+
+        function copyItem(type, folderId, fileId) {
+            clipboard.action = 'copy';
+            clipboard.items = [{ type: type, folderId: folderId, fileId: fileId }];
+            render();
+            showToast('📋 Disalin: ' + (type === 'folder' ? 'folder' : 'file'));
+        }
+
+        function pasteItem(targetFolderId) {
+            if (clipboard.items.length === 0) {
+                showToast('Clipboard kosong!', 'error');
+                return;
+            }
+            var target = findFolder(targetFolderId);
+            if (!target) {
+                showToast('Folder tujuan tidak ditemukan!', 'error');
+                return;
+            }
+            var pasted = 0;
+            for (var i = 0; i < clipboard.items.length; i++) {
+                var item = clipboard.items[i];
+                if (item.type === 'folder') {
+                    var src = findFolder(item.folderId);
+                    if (!src) continue;
+                    var newFolder = {
+                        id: generateId(),
+                        name: src.name + (clipboard.action === 'copy' ? ' (copy)' : ''),
+                        parent: targetFolderId,
+                        files: JSON.parse(JSON.stringify(src.files || []))
+                    };
+                    data.folders.push(newFolder);
+                    if (clipboard.action === 'cut') {
+                        data.folders = data.folders.filter(function(f) { return f.id !== item.folderId; });
+                        expandedFolders = expandedFolders.filter(function(id) { return id !== item.folderId; });
+                    }
+                    pasted++;
+                } else if (item.type === 'file') {
+                    var srcFolder = findFolder(item.folderId);
+                    if (!srcFolder) continue;
+                    var srcFile = srcFolder.files.find(function(f) { return f.id === item.fileId; });
+                    if (!srcFile) continue;
+                    target.files.push({
+                        id: generateId(),
+                        name: srcFile.name + (clipboard.action === 'copy' ? ' (copy)' : ''),
+                        data: srcFile.data,
+                        size: srcFile.size,
+                        type: srcFile.type,
+                        date: Date.now()
+                    });
+                    if (clipboard.action === 'cut') {
+                        srcFolder.files = srcFolder.files.filter(function(f) { return f.id !== item.fileId; });
+                    }
+                    pasted++;
                 }
-            });
+            }
+            if (clipboard.action === 'cut') {
+                clipboard = { items: [], action: null };
+            }
+            render();
+            showToast('✅ ' + pasted + ' item dipaste ke "' + target.name + '"');
+        }
+
+        // ============================================
+        //  CONTEXT MENU
+        // ============================================
+        function showContextMenu(e, type, folderId, fileId) {
+            e.preventDefault();
+            contextTarget = { type: type, folderId: folderId, fileId: fileId };
+            var menu = document.getElementById('contextMenu');
+            menu.style.left = Math.min(e.clientX, window.innerWidth - 180) + 'px';
+            menu.style.top = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+            menu.classList.add('active');
+        }
+
+        function contextAction(action) {
+            if (!contextTarget) return;
+            var type = contextTarget.type;
+            var folderId = contextTarget.folderId;
+            var fileId = contextTarget.fileId;
+            if (action === 'rename') {
+                if (type === 'folder') renameFolder(folderId);
+                else renameFile(folderId, fileId);
+            } else if (action === 'cut') {
+                cutItem(type, folderId, fileId);
+            } else if (action === 'copy') {
+                copyItem(type, folderId, fileId);
+            } else if (action === 'paste') {
+                pasteItem(folderId);
+            } else if (action === 'delete') {
+                if (type === 'folder') deleteFolder(folderId);
+                else deleteFile(folderId, fileId);
+            }
+            closeContextMenu();
+        }
+
+        function closeContextMenu() {
+            document.getElementById('contextMenu').classList.remove('active');
+        }
+
+        // ============================================
+        //  FILTER & VIEW
+        // ============================================
+        function switchView(view) {
+            currentView = view;
+            var items = document.querySelectorAll('.sidebar .menu-item');
+            for (var i = 0; i < items.length; i++) {
+                items[i].classList.remove('active');
+                var text = items[i].textContent.trim().toLowerCase();
+                if (view === 'all' && text.indexOf('semua') !== -1) {
+                    items[i].classList.add('active');
+                } else if (view === 'images' && text.indexOf('foto') !== -1) {
+                    items[i].classList.add('active');
+                } else if (view === 'docs' && text.indexOf('dokumen') !== -1) {
+                    items[i].classList.add('active');
+                }
+            }
+            var titles = { all: '📂 Semua Folder', images: '🖼️ Foto', docs: '📄 Dokumen' };
+            document.getElementById('pageTitle').textContent = titles[view] || '📂 Semua Folder';
             render();
         }
 
-        function filterFiles() {
+        function filterItems() {
             searchQuery = document.getElementById('searchInput').value;
             render();
         }
@@ -837,27 +949,79 @@
         // ============================================
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
-            const label = document.getElementById('themeLabel');
-            label.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
-            document.querySelector('.sidebar .menu-item:last-child .icon').textContent =
-                document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            var label = document.getElementById('themeLabel');
+            var icon = document.getElementById('themeIcon');
+            var isDark = document.body.classList.contains('dark-mode');
+            label.textContent = isDark ? 'Light' : 'Dark';
+            icon.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('gitpo_theme', isDark ? 'dark' : 'light');
         }
 
         // ============================================
-        //  KEYBOARD SHORTCUTS
+        //  DRAG & DROP
         // ============================================
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('uploadBox').classList.remove('dragover');
+            var files = e.dataTransfer.files;
+            if (files.length === 0) return;
+            var root = findFolder('root');
+            if (!root) {
+                showToast('Root tidak ditemukan!', 'error');
+                return;
+            }
+            uploadFilesToFolder('root', files);
+        }
+
+        // ============================================
+        //  INIT
+        // ============================================
+        if (localStorage.getItem('gitpo_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeLabel').textContent = 'Light';
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                uploadFilesToFolder('root', this.files);
+            }
+            this.value = '';
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.context-menu')) closeContextMenu();
+        });
+
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                closeNewFolderModal();
+                closeContextMenu();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
                 e.preventDefault();
                 document.getElementById('fileInput').click();
             }
         });
 
-        // ============================================
-        //  INIT
-        // ============================================
+        var uploadBox = document.getElementById('uploadBox');
+        uploadBox.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        uploadBox.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+        uploadBox.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            handleDrop(e);
+        });
+
         render();
+        console.log('✅ gitpo v6 - File Manager siap!');
     </script>
 </body>
 </html>
