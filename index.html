@@ -3,303 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📸 gitpo - Upload & Galeri</title>
+    <title>📁 gitpo - File Manager</title>
     <style>
-        /* ===== RESET & BASE ===== */
+        /* ============================================
+           RESET & VARIABLES
+           ============================================ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-sidebar: #1a202c;
+            --bg-card: #ffffff;
+            --text-dark: #1a202c;
+            --text-gray: #4a5568;
+            --text-light: #a0aec0;
+            --border-color: #e2e8f0;
+            --primary: #667eea;
+            --primary-hover: #5a67d8;
+            --success: #48bb78;
+            --danger: #fc8181;
+            --warning: #ecc94b;
+            --radius: 8px;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+        body.dark-mode {
+            --bg-body: #1a202c;
+            --bg-card: #2d3748;
+            --text-dark: #e2e8f0;
+            --text-gray: #a0aec0;
+            --text-light: #718096;
+            --border-color: #4a5568;
+        }
         body {
             font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f2f5;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+            background: var(--bg-body);
+            color: var(--text-dark);
+            transition: var(--transition);
+            min-height: 100vh;
         }
 
-        /* ===== HEADER ===== */
-        header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 30px;
-            border-radius: 12px;
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 240px;
+            background: var(--bg-sidebar);
             color: white;
-            text-align: center;
-            margin-bottom: 30px;
+            padding: 20px 16px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
-        header h1 { font-size: 2rem; margin-bottom: 5px; }
-        header h1 span { background: rgba(255,255,255,0.2); padding: 2px 12px; border-radius: 50px; font-size: 0.8rem; }
-        header p { opacity: 0.9; }
+        .sidebar .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar .logo span {
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+        }
+        .sidebar .menu-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 1px;
+            margin: 20px 0 8px 0;
+        }
+        .sidebar .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .sidebar .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        .sidebar .menu-item .icon {
+            font-size: 1.2rem;
+        }
+        .sidebar .menu-item .badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 50px;
+        }
 
-        /* ===== TABS ===== */
-        .tabs {
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            flex: 1;
+            padding: 20px 30px;
+            min-width: 0;
+        }
+
+        /* ===== HEADER MAIN ===== */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .main-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .main-header .actions {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        .tab-btn {
-            padding: 10px 24px;
+        .btn {
+            padding: 8px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-            color: #333;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .tab-btn:hover {
-            transform: translateY(-2px);
-        }
-        .tab-btn.active {
-            background: #667eea;
+        .btn-primary {
+            background: var(--primary);
             color: white;
         }
-        .tab-content {
-            display: none;
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
         }
-        .tab-content.active {
-            display: block;
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            opacity: 0.8;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            opacity: 0.8;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 0.75rem;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-gray);
+        }
+        .btn-outline:hover {
+            background: var(--bg-body);
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .toolbar .info {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+        .toolbar .info span {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .toolbar .search input {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-body);
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            width: 200px;
+        }
+        .toolbar .search input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         /* ===== UPLOAD BOX ===== */
         .upload-box {
-            background: white;
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-            border: 2px dashed #e2e8f0;
             text-align: center;
-            transition: all 0.3s;
+            margin-bottom: 20px;
+            transition: var(--transition);
             cursor: pointer;
         }
         .upload-box:hover {
-            border-color: #667eea;
-            background: #f7fafc;
+            border-color: var(--primary);
+            background: var(--bg-body);
         }
         .upload-box .icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
         }
         .upload-box input[type="file"] {
             display: none;
         }
         .upload-box label {
             cursor: pointer;
-            color: #667eea;
+            color: var(--primary);
             font-weight: 600;
         }
         .upload-box .hint {
-            font-size: 0.85rem;
-            color: #888;
-            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 5px;
         }
 
-        /* ===== PREVIEW ===== */
-        .preview-container {
-            display: none;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-        .preview-container.active {
-            display: block;
-        }
-        .preview-container .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        .btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-        .btn-danger {
-            background: #fc8181;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #f56565;
-        }
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #38a169;
-        }
-        .btn-download {
-            background: #4299e1;
-            color: white;
-        }
-        .btn-download:hover {
-            background: #3182ce;
-        }
-
-        /* ===== PREVIEW GRID ===== */
-        .preview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .preview-item {
-            position: relative;
-            border-radius: 8px;
+        /* ===== TABLE / FILE LIST ===== */
+        .file-table-wrap {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
-            background: #f0f2f5;
-            aspect-ratio: 1/1;
+            border: 1px solid var(--border-color);
+        }
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .file-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--bg-body);
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .file-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .file-table tr:hover {
+            background: var(--bg-body);
+        }
+        .file-table .file-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        .file-table .file-name {
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 10px;
-            text-align: center;
+            gap: 8px;
+            font-weight: 500;
         }
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .file-table .file-name .ext {
+            font-size: 0.6rem;
+            background: var(--bg-body);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--text-light);
         }
-        .preview-item .file-icon {
-            font-size: 2.5rem;
-        }
-        .preview-item .file-name {
-            font-size: 0.7rem;
-            color: #555;
-            margin-top: 4px;
-            word-break: break-all;
-            max-width: 100%;
-        }
-        .preview-item .remove-btn {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
+        .file-table .file-size {
+            color: var(--text-light);
             font-size: 0.8rem;
         }
-
-        /* ===== GALLERY ===== */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+        .file-table .file-date {
+            color: var(--text-light);
+            font-size: 0.8rem;
         }
-        .gallery-item {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            position: relative;
-            cursor: pointer;
-        }
-        .gallery-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .gallery-item .file-info {
-            padding: 10px;
-            text-align: center;
-        }
-        .gallery-item .file-info .name {
-            font-weight: 600;
-            font-size: 0.85rem;
-            word-break: break-all;
-        }
-        .gallery-item .file-info .size {
-            font-size: 0.7rem;
-            color: #888;
-        }
-        .gallery-item .item-actions {
+        .file-table .file-actions {
             display: flex;
             gap: 5px;
-            justify-content: center;
-            padding: 8px;
-            background: #f7fafc;
+            flex-wrap: wrap;
         }
-        .gallery-item .item-actions .btn-sm {
-            padding: 4px 12px;
+        .file-table .file-actions .btn-sm {
+            padding: 3px 10px;
             font-size: 0.7rem;
-            border: none;
             border-radius: 4px;
+            border: none;
             cursor: pointer;
             font-weight: 600;
+            transition: var(--transition);
         }
         .btn-sm.download {
-            background: #4299e1;
+            background: var(--primary);
             color: white;
         }
         .btn-sm.download:hover {
-            background: #3182ce;
+            background: var(--primary-hover);
         }
         .btn-sm.delete {
-            background: #fc8181;
+            background: var(--danger);
             color: white;
         }
         .btn-sm.delete:hover {
-            background: #f56565;
+            opacity: 0.8;
         }
-        .gallery-item .file-icon-big {
-            font-size: 3rem;
-            padding: 20px;
-            text-align: center;
+        .btn-sm.view {
+            background: var(--success);
+            color: white;
+        }
+        .btn-sm.view:hover {
+            opacity: 0.8;
         }
 
-        .empty-gallery {
-            grid-column: 1 / -1;
+        .empty-state {
             text-align: center;
             padding: 40px;
-            color: #a0aec0;
+            color: var(--text-light);
         }
-        .empty-gallery .icon {
+        .empty-state .icon {
             font-size: 3rem;
+            margin-bottom: 10px;
         }
 
         /* ===== LIGHTBOX ===== */
         .lightbox {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0,0,0,0.9);
-            z-index: 1000;
+            z-index: 9999;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -312,7 +381,6 @@
             max-height: 90%;
             object-fit: contain;
             border-radius: 8px;
-            box-shadow: 0 4px 40px rgba(0,0,0,0.5);
         }
         .lightbox .close-lightbox {
             position: absolute;
@@ -321,13 +389,13 @@
             color: white;
             font-size: 2.5rem;
             cursor: pointer;
-            transition: all 0.3s;
             background: none;
             border: none;
+            transition: var(--transition);
         }
         .lightbox .close-lightbox:hover {
             transform: scale(1.2);
-            color: #fc8181;
+            color: var(--danger);
         }
         .lightbox .lightbox-info {
             position: absolute;
@@ -336,164 +404,173 @@
             transform: translateX(-50%);
             color: rgba(255,255,255,0.7);
             font-size: 0.9rem;
-            text-align: center;
             background: rgba(0,0,0,0.5);
             padding: 8px 20px;
             border-radius: 50px;
         }
 
-        /* ===== STATS ===== */
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .stats .count {
-            background: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            font-size: 0.9rem;
-            color: #4a5568;
-        }
-        .stats .count span {
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-            font-size: 0.85rem;
-            margin-top: 30px;
-            border-top: 1px solid #e2e8f0;
-        }
-        .footer .love {
-            color: #fc8181;
-        }
-
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.5rem; }
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-            .preview-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-            .tabs {
+        @media (max-width: 768px) {
+            .app {
                 flex-direction: column;
             }
-            .tab-btn {
-                text-align: center;
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 12px 16px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
             }
-            .lightbox img {
-                max-width: 95%;
-                max-height: 80%;
+            .sidebar .logo {
+                margin-bottom: 0;
+                width: 100%;
             }
-            .lightbox .close-lightbox {
-                top: 10px;
-                right: 15px;
-                font-size: 2rem;
+            .sidebar .menu-label {
+                display: none;
             }
+            .sidebar .menu-item {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .main {
+                padding: 15px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar .search input {
+                width: 100%;
+            }
+            .file-table {
+                font-size: 0.8rem;
+            }
+            .file-table th,
+            .file-table td {
+                padding: 8px 10px;
+            }
+            .file-table .file-actions {
+                flex-direction: column;
+                gap: 3px;
+            }
+        }
+        @media (max-width: 600px) {
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .main-header .actions {
+                justify-content: stretch;
+            }
+            .main-header .actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <header>
-            <h1>📸 gitpo <span>v2.1</span></h1>
-            <p>Upload foto dan file, simpan di galeri!</p>
-        </header>
+    <div class="app">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="logo">
+                📁 gitpo
+                <span>v3</span>
+            </div>
+            <div class="menu-label">Menu</div>
+            <a class="menu-item active" onclick="switchTab('all')">
+                <span class="icon">📂</span> Semua File
+                <span class="badge" id="totalBadge">0</span>
+            </a>
+            <a class="menu-item" onclick="switchTab('image')">
+                <span class="icon">🖼️</span> Foto
+            </a>
+            <a class="menu-item" onclick="switchTab('document')">
+                <span class="icon">📄</span> Dokumen
+            </a>
+            <a class="menu-item" onclick="switchTab('archive')">
+                <span class="icon">📦</span> Arsip
+            </a>
+            <a class="menu-item" onclick="toggleTheme()">
+                <span class="icon">🌙</span> <span id="themeLabel">Dark Mode</span>
+            </a>
+        </aside>
 
-        <!-- TABS -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="photo">📸 Foto</button>
-            <button class="tab-btn" data-tab="file">📁 File</button>
-        </div>
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main">
+            <!-- HEADER -->
+            <div class="main-header">
+                <h1 id="pageTitle">📂 Semua File</h1>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📤 Upload File</button>
+                    <button class="btn btn-outline" onclick="clearAll()">🗑️ Kosongkan</button>
+                </div>
+                <input type="file" id="fileInput" multiple style="display:none" onchange="handleFiles(this.files)">
+            </div>
 
-        <!-- ========================================== -->
-        <!-- TAB 1: FOTO -->
-        <!-- ========================================== -->
-        <div class="tab-content active" id="tab-photo">
-            <!-- Upload Box -->
-            <div class="upload-box" id="uploadBoxPhoto">
+            <!-- TOOLBAR -->
+            <div class="toolbar">
+                <div class="info">
+                    📁 <span id="fileCount">0</span> file • 
+                    💾 <span id="totalSize">0 KB</span>
+                </div>
+                <div class="search">
+                    <input type="text" id="searchInput" placeholder="🔍 Cari file..." oninput="filterFiles()">
+                </div>
+            </div>
+
+            <!-- UPLOAD BOX (Drag & Drop) -->
+            <div class="upload-box" id="uploadBox" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
                 <div class="icon">📤</div>
                 <p>
-                    <label for="fileInputPhoto">Klik untuk memilih foto</label>
-                    atau drag & drop di sini
+                    <label for="fileInput">Klik untuk upload</label>
+                    atau drag & drop file di sini
                 </p>
-                <input type="file" id="fileInputPhoto" accept="image/*" multiple>
-                <div class="hint">Format: JPG, PNG, GIF, WebP | Maks: 5MB per foto</div>
+                <div class="hint">Support semua jenis file | Maks 10MB</div>
             </div>
 
-            <!-- Preview -->
-            <div class="preview-container" id="previewPhoto">
-                <h3 style="margin-bottom:10px;">📋 Preview</h3>
-                <div class="preview-grid" id="previewListPhoto"></div>
-                <div class="btn-group">
-                    <button class="btn btn-success" onclick="savePhotoGallery()">💾 Simpan ke Galeri</button>
-                    <button class="btn btn-danger" onclick="clearPhotoPreview()">🗑️ Batal</button>
-                </div>
+            <!-- FILE TABLE -->
+            <div class="file-table-wrap">
+                <table class="file-table">
+                    <thead>
+                        <tr>
+                            <th style="width:45%">Nama File</th>
+                            <th style="width:15%">Ukuran</th>
+                            <th style="width:20%">Tanggal</th>
+                            <th style="width:20%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fileTableBody">
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <div class="icon">📁</div>
+                                    <p>Belum ada file. Upload file pertama!</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <!-- Gallery -->
-            <div class="stats">
-                <h2 style="font-size:1.2rem;">🖼️ Galeri Foto</h2>
-                <div class="count">Total: <span id="photoCount">0</span> foto</div>
-            </div>
-            <div class="gallery" id="photoGallery"></div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- TAB 2: FILE -->
-        <!-- ========================================== -->
-        <div class="tab-content" id="tab-file">
-            <!-- Upload Box -->
-            <div class="upload-box" id="uploadBoxFile">
-                <div class="icon">📄</div>
-                <p>
-                    <label for="fileInputFile">Klik untuk memilih file</label>
-                    atau drag & drop di sini
-                </p>
-                <input type="file" id="fileInputFile" multiple>
-                <div class="hint">Format: PDF, ZIP, DOC, DOCX, XLS, PPT, TXT | Maks: 10MB per file</div>
-            </div>
-
-            <!-- Preview -->
-            <div class="preview-container" id="previewFile">
-                <h3 style="margin-bottom:10px;">📋 Preview</h3>
-                <div class="preview-grid" id="previewListFile"></div>
-                <div class="btn-group">
-                    <button class="btn btn-success" onclick="saveFileGallery()">💾 Simpan ke Galeri</button>
-                    <button class="btn btn-danger" onclick="clearFilePreview()">🗑️ Batal</button>
-                </div>
-            </div>
-
-            <!-- Gallery -->
-            <div class="stats">
-                <h2 style="font-size:1.2rem;">📁 Galeri File</h2>
-                <div class="count">Total: <span id="fileCount">0</span> file</div>
-            </div>
-            <div class="gallery" id="fileGallery"></div>
-        </div>
-
-        <!-- FOOTER -->
-        <div class="footer">
-            &copy; <?= date('Y') ?> • Dibuat dengan <span class="love">❤️</span> • <strong>gitpo</strong>
-        </div>
+        </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- LIGHTBOX -->
-    <!-- ========================================== -->
-    <div class="lightbox" id="lightbox">
+    <!-- ===== LIGHTBOX ===== -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <button class="close-lightbox" onclick="closeLightbox()">✕</button>
         <img id="lightboxImage" src="" alt="Preview">
         <div class="lightbox-info" id="lightboxInfo">Foto</div>
@@ -501,304 +578,286 @@
 
     <script>
         // ============================================
-        // GITPO v2.1 - PHOTO & FILE UPLOAD
+        //  STATE
         // ============================================
+        let files = JSON.parse(localStorage.getItem('gitpo_files_v3')) || [];
+        let currentTab = 'all';
+        let searchQuery = '';
 
-        // ===== STATE =====
-        let pendingPhotos = [];
-        let pendingFiles = [];
-        let photoGallery = JSON.parse(localStorage.getItem('gitpo_photos')) || [];
-        let fileGallery = JSON.parse(localStorage.getItem('gitpo_files')) || [];
-
-        // ===== DOM ELEMENTS =====
-        const photoInput = document.getElementById('fileInputPhoto');
-        const fileInput = document.getElementById('fileInputFile');
-        const previewPhoto = document.getElementById('previewPhoto');
-        const previewFile = document.getElementById('previewFile');
-        const previewListPhoto = document.getElementById('previewListPhoto');
-        const previewListFile = document.getElementById('previewListFile');
-        const photoGalleryEl = document.getElementById('photoGallery');
-        const fileGalleryEl = document.getElementById('fileGallery');
-        const photoCount = document.getElementById('photoCount');
+        // ============================================
+        //  DOM REFS
+        // ============================================
+        const tbody = document.getElementById('fileTableBody');
         const fileCount = document.getElementById('fileCount');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImage = document.getElementById('lightboxImage');
-        const lightboxInfo = document.getElementById('lightboxInfo');
+        const totalSize = document.getElementById('totalSize');
+        const totalBadge = document.getElementById('totalBadge');
+        const pageTitle = document.getElementById('pageTitle');
+        const fileInput = document.getElementById('fileInput');
 
         // ============================================
-        //  LIGHTBOX FUNCTIONS
+        //  FORMAT HELPERS
         // ============================================
-
-        function openLightbox(src, name) {
-            lightboxImage.src = src;
-            lightboxInfo.textContent = name || 'Foto';
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
-        function closeLightbox() {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeLightbox();
-        });
-
-        lightbox.addEventListener('click', function(e) {
-            if (e.target === this) closeLightbox();
-        });
-
-        // ============================================
-        //  PHOTO SECTION
-        // ============================================
-
-        function renderPhotoGallery() {
-            if (photoGallery.length === 0) {
-                photoGalleryEl.innerHTML = `
-                    <div class="empty-gallery">
-                        <div class="icon">🖼️</div>
-                        <p>Belum ada foto. Upload foto pertama!</p>
-                    </div>
-                `;
-                photoCount.textContent = '0';
-                return;
-            }
-            photoGalleryEl.innerHTML = photoGallery.map((item, index) => `
-                <div class="gallery-item">
-                    <img src="${item.data}" alt="${item.name}" onclick="openLightbox('${item.data}', '${item.name}')">
-                    <div class="file-info">
-                        <div class="name">${item.name}</div>
-                        <div class="size">${(item.size / 1024).toFixed(0)} KB</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-sm download" onclick="downloadItem('${item.data}', '${item.name}')">⬇️ Download</button>
-                        <button class="btn-sm delete" onclick="deletePhoto(${index})">🗑️ Hapus</button>
-                    </div>
-                </div>
-            `).join('');
-            photoCount.textContent = photoGallery.length;
-        }
-
-        function deletePhoto(index) {
-            if (confirm('Yakin ingin menghapus foto ini?')) {
-                photoGallery.splice(index, 1);
-                localStorage.setItem('gitpo_photos', JSON.stringify(photoGallery));
-                renderPhotoGallery();
-            }
-        }
-
-        function handlePhotoFiles(files) {
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            const maxSize = 5 * 1024 * 1024;
-            for (const file of files) {
-                if (!validTypes.includes(file.type)) {
-                    alert(`⚠️ Format ${file.name} tidak didukung.`);
-                    continue;
-                }
-                if (file.size > maxSize) {
-                    alert(`⚠️ ${file.name} terlalu besar. Maks 5MB.`);
-                    continue;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    pendingPhotos.push({ name: file.name, data: e.target.result, size: file.size, type: file.type });
-                    renderPhotoPreview();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function renderPhotoPreview() {
-            if (pendingPhotos.length === 0) { previewPhoto.classList.remove('active'); return; }
-            previewPhoto.classList.add('active');
-            previewListPhoto.innerHTML = pendingPhotos.map((file, i) => `
-                <div class="preview-item">
-                    <img src="${file.data}" alt="${file.name}" onclick="openLightbox('${file.data}', '${file.name}')">
-                    <button class="remove-btn" onclick="removePhotoPending(${i})">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function removePhotoPending(index) {
-            pendingPhotos.splice(index, 1);
-            renderPhotoPreview();
-        }
-
-        function clearPhotoPreview() {
-            pendingPhotos = [];
-            renderPhotoPreview();
-            photoInput.value = '';
-        }
-
-        function savePhotoGallery() {
-            if (pendingPhotos.length === 0) { alert('Tidak ada foto.'); return; }
-            photoGallery = [...photoGallery, ...pendingPhotos];
-            localStorage.setItem('gitpo_photos', JSON.stringify(photoGallery));
-            pendingPhotos = [];
-            renderPhotoPreview();
-            renderPhotoGallery();
-            photoInput.value = '';
-        }
-
-        photoInput.addEventListener('change', function(e) {
-            handlePhotoFiles(e.target.files);
-        });
-
-        document.getElementById('uploadBoxPhoto').addEventListener('drop', function(e) {
-            e.preventDefault();
-            handlePhotoFiles(e.dataTransfer.files);
-        });
-
-        // ============================================
-        //  FILE SECTION
-        // ============================================
-
-        function renderFileGallery() {
-            if (fileGallery.length === 0) {
-                fileGalleryEl.innerHTML = `
-                    <div class="empty-gallery">
-                        <div class="icon">📁</div>
-                        <p>Belum ada file. Upload file pertama!</p>
-                    </div>
-                `;
-                fileCount.textContent = '0';
-                return;
-            }
-            fileGalleryEl.innerHTML = fileGallery.map((item, index) => `
-                <div class="gallery-item">
-                    <div class="file-icon-big">${getFileIcon(item.name)}</div>
-                    <div class="file-info">
-                        <div class="name">${item.name}</div>
-                        <div class="size">${(item.size / 1024).toFixed(0)} KB</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-sm download" onclick="downloadItem('${item.data}', '${item.name}')">⬇️ Download</button>
-                        <button class="btn-sm delete" onclick="deleteFile(${index})">🗑️ Hapus</button>
-                    </div>
-                </div>
-            `).join('');
-            fileCount.textContent = fileGallery.length;
+        function formatDate(ts) {
+            const d = new Date(ts);
+            return d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
         }
 
         function getFileIcon(name) {
             const ext = name.split('.').pop().toLowerCase();
             const icons = {
-                pdf: '📄', zip: '📦', rar: '📦', doc: '📝', docx: '📝',
-                xls: '📊', xlsx: '📊', ppt: '📽️', pptx: '📽️',
-                txt: '📃', mp3: '🎵', mp4: '🎬', exe: '⚙️'
+                // Images
+                jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', webp: '🖼️', svg: '🖼️',
+                // Documents
+                pdf: '📄', doc: '📝', docx: '📝', txt: '📃', rtf: '📃',
+                // Spreadsheets
+                xls: '📊', xlsx: '📊', csv: '📊',
+                // Presentations
+                ppt: '📽️', pptx: '📽️',
+                // Archives
+                zip: '📦', rar: '📦', 7z: '📦', tar: '📦', gz: '📦',
+                // Audio/Video
+                mp3: '🎵', wav: '🎵', mp4: '🎬', avi: '🎬', mkv: '🎬',
+                // Code
+                html: '🌐', css: '🎨', js: '⚡', php: '🐘', py: '🐍', json: '📋',
+                // Others
+                exe: '⚙️', dmg: '💿', iso: '💿'
             };
             return icons[ext] || '📎';
         }
 
-        function deleteFile(index) {
-            if (confirm('Yakin ingin menghapus file ini?')) {
-                fileGallery.splice(index, 1);
-                localStorage.setItem('gitpo_files', JSON.stringify(fileGallery));
-                renderFileGallery();
-            }
+        function getFileType(name) {
+            const ext = name.split('.').pop().toLowerCase();
+            const imageExts = ['jpg','jpeg','png','gif','webp','svg','bmp','ico'];
+            const docExts = ['pdf','doc','docx','txt','rtf','odt'];
+            const archiveExts = ['zip','rar','7z','tar','gz','bz2'];
+            if (imageExts.includes(ext)) return 'image';
+            if (docExts.includes(ext)) return 'document';
+            if (archiveExts.includes(ext)) return 'archive';
+            return 'other';
         }
 
-        function handleFileFiles(files) {
+        // ============================================
+        //  RENDER
+        // ============================================
+        function render() {
+            let filtered = [...files];
+
+            // Filter by tab
+            if (currentTab === 'image') filtered = filtered.filter(f => getFileType(f.name) === 'image');
+            else if (currentTab === 'document') filtered = filtered.filter(f => getFileType(f.name) === 'document');
+            else if (currentTab === 'archive') filtered = filtered.filter(f => getFileType(f.name) === 'archive');
+
+            // Search
+            if (searchQuery.trim()) {
+                const q = searchQuery.toLowerCase().trim();
+                filtered = filtered.filter(f => f.name.toLowerCase().includes(q));
+            }
+
+            // Sort: newest first
+            filtered.sort((a, b) => b.date - a.date);
+
+            // Update badge
+            totalBadge.textContent = files.length;
+
+            // Update counts
+            fileCount.textContent = filtered.length;
+            const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+            totalSize.textContent = formatSize(totalBytes);
+
+            // Update title
+            const tabNames = {
+                all: '📂 Semua File',
+                image: '🖼️ Foto',
+                document: '📄 Dokumen',
+                archive: '📦 Arsip'
+            };
+            pageTitle.textContent = tabNames[currentTab] || '📂 Semua File';
+
+            // Render table
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <div class="icon">📁</div>
+                                <p>${files.length === 0 ? 'Belum ada file. Upload file pertama!' : 'Tidak ada file yang cocok.'}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((file, index) => {
+                const isImage = getFileType(file.name) === 'image';
+                return `
+                    <tr>
+                        <td>
+                            <div class="file-name">
+                                <span class="file-icon">${getFileIcon(file.name)}</span>
+                                ${file.name}
+                                <span class="ext">${file.name.split('.').pop().toUpperCase()}</span>
+                            </div>
+                        </td>
+                        <td class="file-size">${formatSize(file.size)}</td>
+                        <td class="file-date">${formatDate(file.date)}</td>
+                        <td>
+                            <div class="file-actions">
+                                ${isImage ? `<button class="btn-sm view" onclick="viewFile('${file.id}')">👁️ Lihat</button>` : ''}
+                                <button class="btn-sm download" onclick="downloadFile('${file.id}')">⬇️</button>
+                                <button class="btn-sm delete" onclick="deleteFile('${file.id}')">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        //  FILE OPERATIONS
+        // ============================================
+        function addFiles(fileList) {
             const maxSize = 10 * 1024 * 1024;
-            for (const file of files) {
+            let added = 0;
+            for (const file of fileList) {
                 if (file.size > maxSize) {
                     alert(`⚠️ ${file.name} terlalu besar. Maks 10MB.`);
                     continue;
                 }
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    pendingFiles.push({ name: file.name, data: e.target.result, size: file.size, type: file.type });
-                    renderFilePreview();
+                    files.push({
+                        id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                        name: file.name,
+                        data: e.target.result,
+                        size: file.size,
+                        type: file.type,
+                        date: Date.now()
+                    });
+                    added++;
+                    if (added === fileList.length || added === 1) {
+                        localStorage.setItem('gitpo_files_v3', JSON.stringify(files));
+                        render();
+                        if (added === fileList.length) {
+                            alert(`✅ ${added} file berhasil diupload!`);
+                        }
+                    }
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function renderFilePreview() {
-            if (pendingFiles.length === 0) { previewFile.classList.remove('active'); return; }
-            previewFile.classList.add('active');
-            previewListFile.innerHTML = pendingFiles.map((file, i) => `
-                <div class="preview-item">
-                    <div class="file-icon" style="font-size:2rem;">${getFileIcon(file.name)}</div>
-                    <div class="file-name">${file.name}</div>
-                    <button class="remove-btn" onclick="removeFilePending(${i})">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function removeFilePending(index) {
-            pendingFiles.splice(index, 1);
-            renderFilePreview();
-        }
-
-        function clearFilePreview() {
-            pendingFiles = [];
-            renderFilePreview();
+        function handleFiles(fileList) {
+            if (fileList.length === 0) return;
+            addFiles(fileList);
             fileInput.value = '';
         }
 
-        function saveFileGallery() {
-            if (pendingFiles.length === 0) { alert('Tidak ada file.'); return; }
-            fileGallery = [...fileGallery, ...pendingFiles];
-            localStorage.setItem('gitpo_files', JSON.stringify(fileGallery));
-            pendingFiles = [];
-            renderFilePreview();
-            renderFileGallery();
-            fileInput.value = '';
-        }
-
-        fileInput.addEventListener('change', function(e) {
-            handleFileFiles(e.target.files);
-        });
-
-        document.getElementById('uploadBoxFile').addEventListener('drop', function(e) {
+        function handleDrop(e) {
             e.preventDefault();
-            handleFileFiles(e.dataTransfer.files);
-        });
+            if (e.dataTransfer.files.length > 0) {
+                addFiles(e.dataTransfer.files);
+            }
+        }
 
-        // ============================================
-        //  COMMON FUNCTIONS
-        // ============================================
+        function deleteFile(id) {
+            if (!confirm('Yakin ingin menghapus file ini?')) return;
+            files = files.filter(f => f.id !== id);
+            localStorage.setItem('gitpo_files_v3', JSON.stringify(files));
+            render();
+        }
 
-        function downloadItem(data, name) {
+        function downloadFile(id) {
+            const file = files.find(f => f.id === id);
+            if (!file) return;
             const a = document.createElement('a');
-            a.href = data;
-            a.download = name;
+            a.href = file.data;
+            a.download = file.name;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
         }
 
-        // ============================================
-        //  TABS
-        // ============================================
+        function viewFile(id) {
+            const file = files.find(f => f.id === id);
+            if (!file) return;
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImage');
+            const info = document.getElementById('lightboxInfo');
+            img.src = file.data;
+            info.textContent = file.name + ' • ' + formatSize(file.size);
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function clearAll() {
+            if (files.length === 0) return;
+            if (!confirm('Yakin ingin menghapus SEMUA file?')) return;
+            files = [];
+            localStorage.setItem('gitpo_files_v3', JSON.stringify(files));
+            render();
+        }
+
+        // ============================================
+        //  FILTER & SEARCH
+        // ============================================
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.sidebar .menu-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar .menu-item').forEach(el => {
+                if (el.textContent.trim().toLowerCase().includes(
+                    tab === 'all' ? 'semua' :
+                    tab === 'image' ? 'foto' :
+                    tab === 'document' ? 'dokumen' : 'arsip'
+                )) {
+                    el.classList.add('active');
+                }
             });
-        });
+            render();
+        }
+
+        function filterFiles() {
+            searchQuery = document.getElementById('searchInput').value;
+            render();
+        }
 
         // ============================================
-        //  DRAG & DROP EVENTS (Prevent default)
+        //  THEME
         // ============================================
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const label = document.getElementById('themeLabel');
+            label.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+            document.querySelector('.sidebar .menu-item:last-child .icon').textContent =
+                document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
 
-        ['uploadBoxPhoto', 'uploadBoxFile'].forEach(id => {
-            const el = document.getElementById(id);
-            el.addEventListener('dragover', e => e.preventDefault());
-            el.addEventListener('dragenter', e => e.preventDefault());
+        // ============================================
+        //  KEYBOARD SHORTCUTS
+        // ============================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                document.getElementById('fileInput').click();
+            }
         });
 
         // ============================================
         //  INIT
         // ============================================
-
-        renderPhotoGallery();
-        renderFileGallery();
+        render();
     </script>
 </body>
 </html>
